@@ -4,14 +4,14 @@ DOC_META = '__doc__meta__'
 
 
 class DocMeta(type):
-    def __new__(mcs, *args, **kwargs):
-        cls = super().__new__(mcs, *args, **kwargs)
+    def __new__(mcs, name, bases, clsargs):
+        cls = super().__new__(mcs, name, bases, clsargs)
         return cls
 
 
 class Manager:
-    def __init__(self, collection):
-        self.collection = collection
+    def __init__(self, cls):
+        self.cls = cls
 
 
 class DocBase(dict, metaclass=DocMeta):
@@ -56,12 +56,11 @@ class Doc(DocBase):
 
         super().__init__()
 
+    async def save(self):
+        pass
 
-class User(Doc):
-    __init_data__ = {
+    async def delete(self):
+        pass
 
-    }
-
-    __doc_meta__ = {
-
-    }
+    async def refresh(self):
+        pass
