@@ -11,11 +11,25 @@ async def test_doc(event_loop):
             'y': 'y'
         }
 
-        __doc__meta__ = {
-            'test': 'test'
+        __database__ = {
+            'host': 'localhost',
+            'port': 27017,
+            'name': 'test'
         }
+
+        __loop__ = event_loop
 
     d = MyDoc(x='xx')
 
     assert d.x == 'xx'
     assert d.y == 'y'
+
+    await d.save()
+
+    assert '_id' in d
+
+    id_ = d._id
+
+    await d.save()
+
+    assert id_ == d._id

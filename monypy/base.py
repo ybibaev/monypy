@@ -1,11 +1,30 @@
+from motor.motor_asyncio import AsyncIOMotorClient
+
+
 DOC_DATA = '#data'
 DOC_INIT_DATA = '__init_data__'
 DOC_META = '__doc__meta__'
+DOC_DATABASE = '__database__'
+DOC_LOOP = '__loop__'
 
 
 class DocMeta(type):
     def __new__(mcs, name, bases, clsargs):
+        database = None
+        loop = None
+
+        if DOC_DATABASE in clsargs:
+            database = clsargs.pop(DOC_DATABASE)
+            loop = clsargs.pop(DOC_LOOP, None)
+
         cls = super().__new__(mcs, name, bases, clsargs)
+
+        if database:
+            client = AsyncIOMotorClient(database['host'], database['port'], document_class=cls, io_loop=loop)
+            base = client[database['name']]
+            collection = base[name.lower()]
+            cls._collection = collection
+
         return cls
 
 
@@ -42,6 +61,7 @@ class DocBase(dict, metaclass=DocMeta):
 
 class Doc(DocBase):
     manager_cls = None
+    _collection = None
 
     def __new__(cls, *args, **kwargs):
         cls.manger = (cls.manager_cls or Manager)(cls)
@@ -57,7 +77,11 @@ class Doc(DocBase):
         super().__init__()
 
     async def save(self):
-        pass
+        if '_id' not in self:
+            result = await self._collection.insert_one(self.__dict__[DOC_DATA])
+            self._id = result.inserted_id
+        else:
+            await self._collection.replace_one({'_id': self._id}, self.__dict__[DOC_DATA])
 
     async def delete(self):
         pass
