@@ -3,9 +3,16 @@ language: python
 python:
   - "3.6"
 
+services:
+  - mongodb
+  - docker
+
 install:
   - pip install pipenv
   - pipenv install --dev --system
+
+before_script:
+  - sleep 10
 
 script:
   - set PYTHONPATH=.
