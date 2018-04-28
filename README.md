@@ -1,6 +1,8 @@
 # monypy (deep alpha)
 #### async lightweight ODM for mongodb
 
+[![Build Status](https://travis-ci.org/nede1/monypy.svg?branch=master)](https://travis-ci.org/nede1/monypy)
+
 ### Usage:
 ```python
 import asyncio
