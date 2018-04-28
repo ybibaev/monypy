@@ -27,8 +27,25 @@ class DocMeta(type):
                 io_loop=loop
             )
 
+            assert 'name' in database
+
             base = client[database['name']]
-            collection = base[name.lower()]
-            cls.manager = Manager(collection)
+
+            collection_name = database.get('collection', name.lower())
+            collection = base[collection_name]
+
+            manager = Manager(collection)
+            cls.manager = ManagerDescriptor(manager)
 
         return cls
+
+
+class ManagerDescriptor:
+    def __init__(self, manager):
+        self.manager = manager
+
+    def __get__(self, instance, owner):
+        if instance:
+            raise AttributeError('Instance do not have manger')
+
+        return self.manager

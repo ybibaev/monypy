@@ -14,7 +14,8 @@ async def test_doc(event_loop):
         __database__ = {
             'host': 'localhost',
             'port': 27017,
-            'name': 'my_test_base'
+            'name': 'my_test_base',
+            'collection': 'test_collection'
         }
 
         __loop__ = event_loop
@@ -39,6 +40,22 @@ async def test_doc(event_loop):
     await t.save()
 
     tt = await User.manager.find_one({'_id': user._id})
-
     for k in ALL_MONGO_KEYS:
         assert k not in tt
+
+    await user.delete()
+    assert '_id' not in user
+
+    petya = User(name='Petya')
+    await petya.save()
+
+    assert petya.name != user.name
+
+    assert 'test' not in user
+    user.test = 'test'
+
+    assert user.test == 'test'
+
+    await user.refresh()
+
+    assert 'test' not in user

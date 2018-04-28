@@ -56,20 +56,26 @@ class Doc(DocBase):
         defaults = getattr(self, DOC_INIT_DATA, {})
         defaults.update(init_data)
         self.__dict__[DOC_DATA] = defaults
-
         super().__init__()
 
     async def save(self):
         if MONGO_ID_KEY not in self:
-            result = await self.manager \
-                .insert_one(self.__dict__[DOC_DATA])
+            result = await type(self).manager.insert_one(self.__dict__[DOC_DATA])
             self.__dict__[DOC_DATA][MONGO_ID_KEY] = result.inserted_id
         else:
-            await self.manager \
-                .replace_one({MONGO_ID_KEY: self._id}, self.__dict__[DOC_DATA])
+            await type(self).manager.replace_one({MONGO_ID_KEY: self._id}, self.__dict__[DOC_DATA])
 
     async def delete(self):
-        pass
+        if MONGO_ID_KEY not in self:
+            raise Exception
+
+        await type(self).manager.delete_one({MONGO_ID_KEY: self._id})
+
+        del self._id
 
     async def refresh(self):
-        pass
+        if MONGO_ID_KEY not in self:
+            raise Exception
+
+        result = await type(self).manager.find_one({MONGO_ID_KEY: self._id})
+        self.__dict__[DOC_DATA] = result.__dict__[DOC_DATA]
