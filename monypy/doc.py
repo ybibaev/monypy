@@ -1,4 +1,4 @@
-from contextlib import suppress
+from copy import deepcopy
 
 from .meta import DocMeta, DOC_DATA
 
@@ -6,24 +6,10 @@ DOC_INIT_DATA = '__init_data__'
 
 MONGO_ID_KEY = '_id'
 
-MONGO_KEYS = ('cursor', 'ns', 'ok', 'id')
-ALL_MONGO_KEYS = ('firstBatch', 'nextBatch') + MONGO_KEYS
-
 
 class DocBase(dict, metaclass=DocMeta):
     def __getitem__(self, item):
-        value = self.__dict__[DOC_DATA][item]
-
-        if item.endswith('Batch'):
-            self.__cleanup_mongo_keys(item)
-
-        return value
-
-    def __cleanup_mongo_keys(self, key):
-        if key in ALL_MONGO_KEYS and all(k in self.__dict__[DOC_DATA] for k in MONGO_KEYS):
-            for k in ALL_MONGO_KEYS:
-                with suppress(KeyError):
-                    del self.__dict__[DOC_DATA][k]
+        return self.__dict__[DOC_DATA][item]
 
     def __setitem__(self, key, value):
         self.__dict__[DOC_DATA][key] = value
@@ -55,7 +41,7 @@ class Doc(DocBase):
         init_data = args[0] if args else kwargs
         defaults = getattr(self, DOC_INIT_DATA, {})
         defaults.update(init_data)
-        self.__dict__[DOC_DATA] = defaults
+        self.__dict__[DOC_DATA] = deepcopy(defaults)
         super().__init__()
 
     async def save(self):

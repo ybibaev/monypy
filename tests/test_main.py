@@ -1,7 +1,6 @@
 import pytest
 
 from monypy import Doc
-from monypy.doc import ALL_MONGO_KEYS
 
 
 @pytest.mark.asyncio
@@ -32,17 +31,6 @@ async def test_doc(event_loop):
     await user.save()
     assert id_ == user._id
 
-    t = await User.manager.find_one({'_id': user._id})
-
-    for k in ALL_MONGO_KEYS:
-        assert k not in t
-
-    await t.save()
-
-    tt = await User.manager.find_one({'_id': user._id})
-    for k in ALL_MONGO_KEYS:
-        assert k not in tt
-
     await user.delete()
     assert '_id' not in user
 
@@ -50,6 +38,8 @@ async def test_doc(event_loop):
     await petya.save()
 
     assert petya.name != user.name
+
+    await user.save()
 
     assert 'test' not in user
     user.test = 'test'
