@@ -17,7 +17,7 @@ class User(Doc):
     __database__ = {
         'name': 'test',
         'host': 'localhost',
-        'port': '27017'
+        'port': 27017
     }
     
 user = User({'name': 'Vasya'})
