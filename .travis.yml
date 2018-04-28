@@ -5,7 +5,6 @@ python:
 
 services:
   - mongodb
-  - docker
 
 install:
   - pip install pipenv
@@ -16,4 +15,5 @@ before_script:
 
 script:
   - set PYTHONPATH=.
+  - flake8
   - python -m pytest
