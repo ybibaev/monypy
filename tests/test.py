@@ -1,35 +1,44 @@
 import pytest
 
-from monypy.base import Doc
+from monypy import Doc
+from monypy.doc import ALL_MONGO_KEYS
 
 
 @pytest.mark.asyncio
 async def test_doc(event_loop):
-    class MyDoc(Doc):
+    class User(Doc):
         __init_data__ = {
-            'x': 'x',
-            'y': 'y'
+            'sex': 'male'
         }
 
         __database__ = {
             'host': 'localhost',
             'port': 27017,
-            'name': 'test'
+            'name': 'my_test_base'
         }
 
         __loop__ = event_loop
 
-    d = MyDoc(x='xx')
+    user = User({'name': 'Vasya'})
 
-    assert d.x == 'xx'
-    assert d.y == 'y'
+    await user.save()
 
-    await d.save()
+    assert '_id' in user
+    assert user.name == 'Vasya'
+    assert user.sex == 'male'
 
-    assert '_id' in d
+    id_ = user._id
+    await user.save()
+    assert id_ == user._id
 
-    id_ = d._id
+    t = await User.manager.find_one({'_id': user._id})
 
-    await d.save()
+    for k in ALL_MONGO_KEYS:
+        assert k not in t
 
-    assert id_ == d._id
+    await t.save()
+
+    tt = await User.manager.find_one({'_id': user._id})
+
+    for k in ALL_MONGO_KEYS:
+        assert k not in tt
