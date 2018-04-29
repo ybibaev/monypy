@@ -7,6 +7,6 @@ setup(name='monypy',
       author='Yaroslav Unknown',
       author_email='yaroslav@gmx.it',
       license='MIT',
-      packages=['motor'],
+      packages=['monypy'],
       install_requires=['motor'],
       zip_safe=False)
