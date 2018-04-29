@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 
 from .meta import DocMeta, DOC_DATA
@@ -35,9 +36,21 @@ class DocBase(dict, metaclass=DocMeta):
     def __iter__(self):
         return iter(self.__dict__[DOC_DATA])
 
+    def as_json(self):
+        j = deepcopy(self.__dict__[DOC_DATA])
+        if MONGO_ID_KEY in j:
+            j[MONGO_ID_KEY] = str(j[MONGO_ID_KEY])
+        return json.dumps(j)
+
+    def __repr__(self):
+        return f'<{type(self).__name__}({self.as_json()})>'
+
+    def __str__(self):
+        return self.as_json()
+
 
 class Doc(DocBase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # TODO: move to metaclass
         init_data = args[0] if args else kwargs
         defaults = getattr(self, DOC_INIT_DATA, {})
         defaults.update(init_data)
