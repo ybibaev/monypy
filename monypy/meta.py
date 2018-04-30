@@ -1,7 +1,7 @@
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
 
 from .connection import connect
-from .manager import Manager
+from .manager import Manager, ManagerDescriptor
 
 DOC_DATA = '#data'
 
@@ -35,18 +35,16 @@ class DocMeta(type):
             collection_codec_options = DEFAULT_CODEC_OPTIONS.with_options(document_class=cls)
             collection = base[collection_name].with_options(collection_codec_options)
 
-            manager = Manager(collection)
-            cls.manager = ManagerDescriptor(manager)
+            cls.manager = manager_factory(cls, collection)
 
         return cls
 
 
-class ManagerDescriptor:
-    def __init__(self, manager):
-        self.manager = manager
+def manager_factory(doc_class, collection):
+    manager_doc_class = doc_class.manager_class
+    manager_class = (manager_doc_class.for_doc(doc_class)
+                     if manager_doc_class is Manager
+                     else manager_doc_class)
 
-    def __get__(self, instance, owner):
-        if instance:
-            raise AttributeError
-
-        return self.manager
+    manager = manager_class(collection)
+    return ManagerDescriptor(manager)
