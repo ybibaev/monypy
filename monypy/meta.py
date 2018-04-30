@@ -47,6 +47,6 @@ class ManagerDescriptor:
 
     def __get__(self, instance, owner):
         if instance:
-            raise AttributeError('Instance do not have manger')
+            raise AttributeError
 
         return self.manager

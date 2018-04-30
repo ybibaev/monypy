@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from .exceptions import DocumentDoesNotExistError
 from .meta import DocMeta, DOC_DATA
 
 DOC_INIT_DATA = '__init_data__'
@@ -7,7 +8,7 @@ DOC_INIT_DATA = '__init_data__'
 MONGO_ID_KEY = '_id'
 
 
-class DocBase(dict, metaclass=DocMeta):
+class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.MutableMapping
     def __getitem__(self, item):
         return self.__dict__[DOC_DATA][item]
 
@@ -59,7 +60,7 @@ class Doc(DocBase):
 
     async def delete(self):
         if MONGO_ID_KEY not in self:
-            raise Exception
+            raise DocumentDoesNotExistError
 
         await type(self).manager.delete_one({MONGO_ID_KEY: self._id})
 
@@ -67,7 +68,7 @@ class Doc(DocBase):
 
     async def refresh(self):
         if MONGO_ID_KEY not in self:
-            raise Exception
+            raise DocumentDoesNotExistError
 
         result = await type(self).manager.find_one({MONGO_ID_KEY: self._id})
         self.__dict__[DOC_DATA] = result.__dict__[DOC_DATA]
