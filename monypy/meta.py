@@ -1,5 +1,6 @@
-from motor.motor_asyncio import AsyncIOMotorClient
+from bson.codec_options import CodecOptions
 
+from .connection import connect
 from .manager import Manager
 
 DOC_DATA = '#data'
@@ -20,10 +21,9 @@ class DocMeta(type):
         cls = super().__new__(mcs, name, bases, clsargs)
 
         if database:
-            client = AsyncIOMotorClient(
-                database['host'],
-                database['port'],
-                document_class=cls,
+            client = connect(
+                host=database['host'],
+                port=database['port'],
                 io_loop=loop
             )
 
@@ -32,7 +32,8 @@ class DocMeta(type):
             base = client[database['name']]
 
             collection_name = database.get('collection', name.lower())
-            collection = base[collection_name]
+            collection_codec_options = CodecOptions(document_class=cls)
+            collection = base[collection_name].with_options(collection_codec_options)
 
             manager = Manager(collection)
             cls.manager = ManagerDescriptor(manager)
