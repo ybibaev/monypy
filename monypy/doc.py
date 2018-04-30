@@ -4,8 +4,6 @@ from .exceptions import DocumentDoesNotExistError
 from .manager import Manager
 from .meta import DocMeta, DOC_DATA
 
-DOC_INIT_DATA = '__init_data__'
-
 MONGO_ID_KEY = '_id'
 
 
@@ -46,13 +44,6 @@ class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.Mut
 
 class Doc(DocBase):
     manager_class = Manager
-
-    def __init__(self, *args, **kwargs):  # TODO: move to metaclass
-        init_data = args[0] if args else kwargs
-        defaults = getattr(self, DOC_INIT_DATA, {})
-        defaults.update(init_data)
-        self.__dict__[DOC_DATA] = deepcopy(defaults)
-        super().__init__()
 
     async def save(self):
         if MONGO_ID_KEY not in self:

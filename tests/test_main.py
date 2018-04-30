@@ -54,3 +54,8 @@ async def test_doc(event_loop):  # TODO: move to separate tests
     assert '<User({' in repr(user)
 
     assert user.__dict__[DOC_DATA] is not user.as_dict()
+
+    u = User({'sex': 'female', 'user_id': lambda self: 45})
+
+    assert u.sex == 'female'
+    assert u.user_id == 45

@@ -1,3 +1,5 @@
+import copy
+
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
 
 from .connection import connect
@@ -5,6 +7,7 @@ from .manager import Manager, ManagerDescriptor
 
 DOC_DATA = '#data'
 
+DOC_INIT_DATA = '__init_data__'
 DOC_DATABASE = '__database__'
 DOC_LOOP = '__loop__'
 
@@ -38,6 +41,29 @@ class DocMeta(type):
             cls.manager = manager_factory(cls, collection)
 
         return cls
+
+    def __call__(cls, *args, **kwargs):
+        init_data = copy.deepcopy(
+            args[0] if args else kwargs
+        )
+
+        assert isinstance(init_data, dict)
+
+        instance = super().__call__()
+        instance.__dict__[DOC_DATA] = {}
+
+        defaults = copy.deepcopy(
+            getattr(instance, DOC_INIT_DATA, {})
+        )
+        defaults.update(init_data)
+
+        for k, v in defaults.items():
+            if callable(v):
+                defaults[k] = v(instance)
+
+        instance.__dict__[DOC_DATA].update(defaults)
+
+        return instance
 
 
 def manager_factory(doc_class, collection):
