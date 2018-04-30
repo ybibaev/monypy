@@ -1,6 +1,7 @@
 import pytest
 
 from monypy import Doc
+from monypy.meta import DOC_DATA
 
 
 @pytest.mark.asyncio
@@ -49,3 +50,7 @@ async def test_doc(event_loop):
     await user.refresh()
 
     assert 'test' not in user
+
+    assert '<User({' in repr(user)
+
+    assert user.__dict__[DOC_DATA] is not user.as_dict()
