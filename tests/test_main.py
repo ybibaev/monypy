@@ -5,7 +5,7 @@ from monypy.meta import DOC_DATA
 
 
 @pytest.mark.asyncio
-async def test_doc(event_loop):
+async def test_doc(event_loop):  # TODO: move to separate tests
     class User(Doc):
         __init_data__ = {
             'sex': 'male'

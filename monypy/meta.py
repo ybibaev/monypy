@@ -1,4 +1,4 @@
-from bson.codec_options import CodecOptions
+from bson.codec_options import DEFAULT_CODEC_OPTIONS
 
 from .connection import connect
 from .manager import Manager
@@ -32,7 +32,7 @@ class DocMeta(type):
             base = client[database['name']]
 
             collection_name = database.get('collection', name.lower())
-            collection_codec_options = CodecOptions(document_class=cls)
+            collection_codec_options = DEFAULT_CODEC_OPTIONS.with_options(document_class=cls)
             collection = base[collection_name].with_options(collection_codec_options)
 
             manager = Manager(collection)
