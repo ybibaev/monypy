@@ -14,19 +14,6 @@ DOC_DATABASE = '__database__'
 DOC_LOOP = '__loop__'
 
 
-def find(classes, token):
-    def _find(cls):
-        nonlocal token
-
-        for c in cls.__mro__:
-            target = c.__dict__.get(token)
-            if target:
-                return target
-
-    with suppress(StopIteration):
-        return next(takewhile(lambda x: x, (_find(c) for c in classes)))
-
-
 class DocMeta(type):
     def __new__(mcs, name, bases, clsargs):
         database = clsargs.pop(DOC_DATABASE, find(bases, DOC_DATABASE))
@@ -85,3 +72,16 @@ def manager_factory(doc_class, collection):
 
     manager = manager_class(collection)
     return ManagerDescriptor(manager)
+
+
+def find(classes, token):
+    def _find(cls):
+        nonlocal token
+
+        for c in cls.__mro__:
+            target = c.__dict__.get(token)
+            if target:
+                return target
+
+    with suppress(StopIteration):
+        return next(takewhile(lambda x: x, (_find(c) for c in classes)))
