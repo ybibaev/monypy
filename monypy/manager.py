@@ -19,7 +19,7 @@ class ManagerDescriptor:
         self.manager = manager
 
     def __get__(self, instance, owner):
-        if instance:
-            raise AttributeError
+        if instance is not None:
+            raise AttributeError(f"Instance of {owner.__name__!r} has no attribute 'manager'")
 
         return self.manager

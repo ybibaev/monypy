@@ -5,17 +5,10 @@ from monypy.meta import DOC_DATA
 
 
 @pytest.mark.asyncio
-async def test_doc(event_loop):  # TODO: move to separate tests
-    class User(Doc):
+async def test_doc(event_loop, settings):  # TODO: move to separate tests
+    class User(settings, Doc):
         __init_data__ = {
             'sex': 'male'
-        }
-
-        __database__ = {
-            'host': 'localhost',
-            'port': 27017,
-            'name': 'my_test_base',
-            'collection': 'test_collection'
         }
 
         __loop__ = event_loop

@@ -1,4 +1,6 @@
 import copy
+from contextlib import suppress
+from itertools import takewhile
 
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
 
@@ -12,14 +14,23 @@ DOC_DATABASE = '__database__'
 DOC_LOOP = '__loop__'
 
 
+def find(classes, token):
+    def _find(cls):
+        nonlocal token
+
+        for c in cls.__mro__:
+            target = c.__dict__.get(token)
+            if target:
+                return target
+
+    with suppress(StopIteration):
+        return next(takewhile(lambda x: x, (_find(c) for c in classes)))
+
+
 class DocMeta(type):
     def __new__(mcs, name, bases, clsargs):
-        database = None
-        loop = None
-
-        if DOC_DATABASE in clsargs:
-            database = clsargs.pop(DOC_DATABASE)
-            loop = clsargs.pop(DOC_LOOP, None)
+        database = clsargs.pop(DOC_DATABASE, find(bases, DOC_DATABASE))
+        loop = clsargs.pop(DOC_LOOP, find(bases, DOC_LOOP))
 
         cls = super().__new__(mcs, name, bases, clsargs)
 
@@ -53,7 +64,7 @@ class DocMeta(type):
         instance.__dict__[DOC_DATA] = {}
 
         defaults = copy.deepcopy(
-            getattr(instance, DOC_INIT_DATA, {})
+            cls.__dict__.get(DOC_INIT_DATA, {})
         )
         defaults.update(init_data)
 

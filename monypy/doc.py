@@ -20,14 +20,20 @@ class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.Mut
     def __contains__(self, item):
         return item in self.__dict__[DOC_DATA]
 
-    def __getattr__(self, item):
-        return self.__dict__[DOC_DATA][item]
+    def __getattr__(self, key):
+        try:
+            return self.__dict__[DOC_DATA][key]
+        except KeyError:
+            raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
 
     def __setattr__(self, key, value):
         self.__dict__[DOC_DATA][key] = value
 
-    def __delattr__(self, item):
-        del self.__dict__[DOC_DATA][item]
+    def __delattr__(self, key):
+        try:
+            del self.__dict__[DOC_DATA][key]
+        except KeyError:
+            raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
 
     def __len__(self):
         return len(self.__dict__[DOC_DATA])
