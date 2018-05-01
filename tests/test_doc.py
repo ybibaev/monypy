@@ -22,7 +22,7 @@ async def test_doc_like_dict(empty_doc):
         del empty['test']
 
     with pytest.raises(KeyError):
-        test = empty['test']
+        test = empty['test']  # noqa
 
     empty['test'] = 'test'
     assert 'test' in empty
@@ -40,7 +40,7 @@ async def test_doc_set_get_del(empty_doc):
     del empty.test
 
     with pytest.raises(AttributeError):
-        test = empty.test
+        test = empty.test  # noqa
 
     with pytest.raises(AttributeError):
         del empty.test
