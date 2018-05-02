@@ -18,6 +18,7 @@ class DocMeta(type):
     def __new__(mcs, name, bases, clsargs):
         database = clsargs.pop(DOC_DATABASE, find(bases, DOC_DATABASE))
         loop = clsargs.pop(DOC_LOOP, find(bases, DOC_LOOP))
+        clsargs[DOC_INIT_DATA] = clsargs.pop(DOC_INIT_DATA, find(bases, DOC_INIT_DATA) or {})
 
         cls = super().__new__(mcs, name, bases, clsargs)
 
@@ -84,4 +85,4 @@ def find(classes, token):
                 return target
 
     with suppress(StopIteration):
-        return next(takewhile(lambda x: x, (_find(c) for c in classes)))
+        return next(takewhile(bool, filter(bool, map(_find, classes))))

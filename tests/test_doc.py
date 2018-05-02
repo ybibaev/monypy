@@ -6,31 +6,6 @@ from monypy.meta import DOC_DATA
 
 
 @pytest.mark.asyncio
-async def test_doc_like_dict(empty_doc):
-    empty = empty_doc(test='test')
-
-    assert 'test' in empty
-    assert 'test_test' not in empty
-
-    assert 1 == len(empty)
-
-    del empty['test']
-
-    assert 'test' not in empty
-
-    with pytest.raises(KeyError):
-        del empty['test']
-
-    with pytest.raises(KeyError):
-        test = empty['test']  # noqa
-
-    empty['test'] = 'test'
-    assert 'test' in empty
-
-    assert list(empty) == ['test']
-
-
-@pytest.mark.asyncio
 async def test_doc_set_get_del(empty_doc):
     empty = empty_doc()
 
