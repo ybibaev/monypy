@@ -1,6 +1,5 @@
 import copy
 from contextlib import suppress
-from itertools import takewhile
 
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
 
@@ -85,4 +84,4 @@ def find(classes, token):
                 return target
 
     with suppress(StopIteration):
-        return next(takewhile(bool, filter(bool, map(_find, classes))))
+        return next(filter(bool, map(_find, classes)))
