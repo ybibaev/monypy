@@ -4,6 +4,7 @@ from contextlib import suppress
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
 
 from .connection import connect
+from .exceptions import DocumentInitDataError
 from .manager import Manager, ManagerDescriptor
 
 DOC_DATA = '#data'
@@ -41,11 +42,15 @@ class DocMeta(type):
         return cls
 
     def __call__(cls, *args, **kwargs):
+        if args and kwargs:
+            raise DocumentInitDataError('Only arg or only kwargs')
+
         init_data = copy.deepcopy(
             args[0] if args else kwargs
         )
 
-        assert isinstance(init_data, dict)
+        if not isinstance(init_data, dict):
+            raise DocumentInitDataError('Init data must be an instance of dict')
 
         instance = super().__call__()
         instance.__dict__[DOC_DATA] = {}
@@ -53,6 +58,10 @@ class DocMeta(type):
         defaults = copy.deepcopy(
             cls.__dict__.get(DOC_INIT_DATA, {})
         )
+
+        if not isinstance(init_data, dict):
+            raise DocumentInitDataError('Init data must be an instance of dict')
+
         defaults.update(init_data)
 
         for k, v in defaults.items():

@@ -4,3 +4,7 @@ class BaseMonypyException(Exception):
 
 class DocumentDoesNotExistError(BaseMonypyException):
     pass
+
+
+class DocumentInitDataError(BaseMonypyException):
+    pass
