@@ -31,4 +31,7 @@ assert '_id' in user
 assert user.name == 'Vasya'
 assert user.sex == 'male'
 
+assert not callable(user.instance_id)
+assert user.instance_id == id(user)
+
 ```
