@@ -12,12 +12,14 @@ DOC_DATA = '#data'
 DOC_INIT_DATA = '__init_data__'
 DOC_DATABASE = '__database__'
 DOC_LOOP = '__loop__'
+DOC_COLLECTION = '__collection__'
 
 
 class DocMeta(type):
     def __new__(mcs, name, bases, clsargs):
         database = clsargs.pop(DOC_DATABASE, find(bases, DOC_DATABASE))
         loop = clsargs.pop(DOC_LOOP, find(bases, DOC_LOOP))
+        collection = clsargs.pop(DOC_COLLECTION, find(bases, DOC_COLLECTION))
         clsargs[DOC_INIT_DATA] = clsargs.pop(DOC_INIT_DATA, find(bases, DOC_INIT_DATA) or {})
 
         cls = super().__new__(mcs, name, bases, clsargs)
@@ -31,13 +33,10 @@ class DocMeta(type):
 
             assert 'name' in database
 
-            base = client[database['name']]
+            db = client[database['name']]
+            db_collection = create_db_collection(cls, db, collection)
 
-            collection_name = database.get('collection', name.lower())
-            collection_codec_options = DEFAULT_CODEC_OPTIONS.with_options(document_class=cls)
-            collection = base[collection_name].with_options(collection_codec_options)
-
-            cls.manager = manager_factory(cls, collection)
+            cls.manager = manager_factory(cls, db_collection)
 
         return cls
 
@@ -94,3 +93,16 @@ def find(classes, token):
 
     with suppress(StopIteration):
         return next(filter(bool, map(_find, classes)))
+
+
+def create_db_collection(doc_class, db, data):
+    try:
+        collection_name = data['name']
+    except TypeError:
+        collection_name = doc_class.__name__.lower()
+
+    collection_codec_options = DEFAULT_CODEC_OPTIONS \
+        .with_options(document_class=doc_class)
+
+    return db[collection_name] \
+        .with_options(collection_codec_options)

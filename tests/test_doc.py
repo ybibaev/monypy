@@ -1,5 +1,7 @@
 import pytest
 
+from monypy import Doc
+
 
 @pytest.mark.asyncio
 async def test_setattr(empty_doc):
@@ -45,4 +47,21 @@ async def test_delattr_without_data(empty_doc):
 async def test_repr(empty_doc):
     empty = empty_doc(test='test')
 
-    assert "<EmptyDoc({'test': 'test'})>" in repr(empty)
+    assert "<EmptyDoc({'test': 'test'})>" == repr(empty)
+
+
+@pytest.mark.asyncio
+async def test_change_collection_name(event_loop, settings):
+    class EmptyDoc(settings, Doc):
+        __collection__ = {
+            'name': 'test_doc'
+        }
+
+        __loop__ = event_loop
+
+    assert EmptyDoc.manager.name == 'test_doc'
+
+
+@pytest.mark.asyncio
+async def test_collection_name(empty_doc):
+    assert empty_doc.manager.name == 'emptydoc'
