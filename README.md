@@ -1,9 +1,9 @@
-# monypy (deep alpha)
+# monypy
 #### async lightweight ODM for mongodb
 
 [![Build Status](https://travis-ci.org/nede1/monypy.svg?branch=master)](https://travis-ci.org/nede1/monypy)
 
-### Usage:
+### Example:
 ```python
 import asyncio
 from monypy import Doc
@@ -11,7 +11,8 @@ from monypy import Doc
 
 class User(Doc):
     __init_data__ = {
-        'sex': 'male'
+        'sex': 'male',
+        'instance_id': lambda i: id(i)
     }
     
     __database__ = {
