@@ -65,3 +65,18 @@ async def test_change_collection_name(event_loop, settings):
 @pytest.mark.asyncio
 async def test_collection_name(empty_doc):
     assert empty_doc.manager.name == 'emptydoc'
+
+
+@pytest.mark.asyncio
+async def test_non_equality(empty_doc):
+    doc_1 = empty_doc(name='doc_1')
+    doc_2 = empty_doc(name='doc_2')
+
+    assert doc_1 != doc_2
+
+
+@pytest.mark.asyncio
+async def test_equality(empty_doc):
+    doc_1 = empty_doc(name='doc_1')
+
+    assert doc_1 == doc_1

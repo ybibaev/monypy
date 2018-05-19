@@ -47,6 +47,12 @@ class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.Mut
     def __repr__(self):
         return f'<{type(self).__name__}({self.as_dict()!r})>'
 
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.__dict__[DOC_DATA] == other.__dict__[DOC_DATA]
+
+    def __ne__(self, other):
+        return not self == other
+
 
 class Doc(DocBase):
     manager_class = Manager
