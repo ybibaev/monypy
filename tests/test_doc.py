@@ -51,6 +51,13 @@ async def test_repr(empty_doc):
 
 
 @pytest.mark.asyncio
+async def test_repr_too_long(empty_doc):
+    empty = empty_doc(test='test-test-test-test-test-test-test-test-test-test-test-test')
+
+    assert "<EmptyDoc({'test': 'test-test-te...est-test-test'})>" == repr(empty)
+
+
+@pytest.mark.asyncio
 async def test_change_collection_name(event_loop, settings):
     class EmptyDoc(settings, Doc):
         __collection__ = {
