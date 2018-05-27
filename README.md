@@ -3,6 +3,16 @@
 
 [![Build Status](https://travis-ci.org/nede1/monypy.svg?branch=master)](https://travis-ci.org/nede1/monypy)
 
+### Dependencies
+```
+motor >= 1.2.0
+```
+
+### Installation
+```bash
+pipenv install git+https://github.com/nede1/monypy#egg=monypy
+```
+
 ### Example:
 ```python
 import asyncio
