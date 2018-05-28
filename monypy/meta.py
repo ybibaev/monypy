@@ -25,15 +25,11 @@ class DocMeta(type):
         cls = super().__new__(mcs, name, bases, clsargs)
 
         if database:
-            client = connect(
-                host=database['host'],
-                port=database['port'],
-                io_loop=loop
-            )
+            db_name = database.pop('name')
+            database.update(io_loop=loop)
+            client = connect(**database)
 
-            assert 'name' in database
-
-            db = client[database['name']]
+            db = client[db_name]
             db_collection = create_db_collection(cls, db, collection)
 
             cls.manager = manager_factory(cls, db_collection)

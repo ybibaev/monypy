@@ -3,7 +3,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 _connections = {}
 
 
-def connect(host='localhost', port=27017, io_loop=None):
-    if (host, port) not in _connections:
-        _connections[host, port] = AsyncIOMotorClient(host=host, port=port, io_loop=io_loop)
-    return _connections[host, port]
+def connect(**kwargs):
+    io_loop = kwargs.pop('io_loop')
+    key = hash(''.join(sorted(map(str, kwargs.keys()))))
+
+    if key not in _connections:
+        _connections[key] = AsyncIOMotorClient(**kwargs, io_loop=io_loop)
+    return _connections[key]
