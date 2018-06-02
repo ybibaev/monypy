@@ -1,5 +1,5 @@
-from copy import deepcopy
 import reprlib
+
 from .exceptions import DocumentDoesNotExistError
 from .manager import Manager
 from .meta import DocMeta, DOC_DATA
@@ -41,12 +41,12 @@ class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.Mut
     def __iter__(self):
         return iter(self.__dict__[DOC_DATA])
 
-    def as_dict(self):
-        return deepcopy(self.__dict__[DOC_DATA])
+    def _as_dict(self):
+        return self.__dict__[DOC_DATA]
 
     def __repr__(self):
         name = type(self).__name__
-        repr_ = reprlib.repr(self.as_dict())
+        repr_ = reprlib.repr(self._as_dict())
         return f'<{name}({repr_})>'
 
     def __eq__(self, other):

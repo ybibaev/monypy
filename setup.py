@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1'
+import monypy
 
 setup(
     name='monypy',
-    version=VERSION,
+    version=monypy.__version__,
     description='Asynchronous lightweight ODM for mongodb',
     keywords='asyncio mongodb',
     url='http://github.com/nede1/monypy',
@@ -15,7 +15,6 @@ setup(
     license='MIT',
 
     classifiers=[
-        'Development Status :: 4 - Alpha',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
         'Topic :: Software Development',

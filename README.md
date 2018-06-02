@@ -1,10 +1,10 @@
-# monypy
-#### async lightweight ODM for mongodb
+# monypy - asynchronous lightweight ODM for MongoDB 
 
 [![Build Status](https://travis-ci.org/nede1/monypy.svg?branch=master)](https://travis-ci.org/nede1/monypy)
 
 ### Dependencies
 ```
+python >= 3.6
 motor >= 1.2.0
 ```
 

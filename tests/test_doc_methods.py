@@ -79,8 +79,8 @@ async def test_delete_not_saved(empty_doc):
 async def test_as_dict(empty_doc):
     empty = empty_doc(test='test')
 
-    d = empty.as_dict()
+    d = empty._as_dict()
 
     assert isinstance(d, dict)
     assert not isinstance(d, Doc)
-    assert empty.__dict__[DOC_DATA] is not d
+    assert empty.__dict__[DOC_DATA] is d
