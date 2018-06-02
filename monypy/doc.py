@@ -59,6 +59,11 @@ class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.Mut
 class Doc(DocBase):
     manager_class = Manager
 
+    __init_data__ = None
+    __collection__ = None
+    __database__ = None
+    __loop__ = None
+
     async def save(self):
         if MONGO_ID_KEY not in self:
             result = await type(self).manager.insert_one(self.__dict__[DOC_DATA])
