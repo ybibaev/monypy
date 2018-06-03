@@ -2,18 +2,18 @@
 
 [![Build Status](https://travis-ci.org/nede1/monypy.svg?branch=master)](https://travis-ci.org/nede1/monypy)
 
-### Dependencies
+## Dependencies ##
 ```
 python >= 3.6
 motor >= 1.2.0
 ```
 
-### Installation
+## Installation ##
 ```bash
 pipenv install git+https://github.com/nede1/monypy#egg=monypy
 ```
 
-### Example:
+## Quick Start ##
 ```python
 import asyncio
 from monypy import Doc
@@ -31,17 +31,52 @@ class User(Doc):
         'port': 27017
     }
     
-user = User({'name': 'Vasya'})
+user = User({'name': 'John'})
 
-asyncio.get_event_loop() \
-    .run_until_complete(user.save())
-
-
-assert '_id' in user
-assert user.name == 'Vasya'
+assert '_id' not in user
+assert user.name == 'John'
 assert user.sex == 'male'
 
 assert not callable(user.instance_id)
 assert user.instance_id == id(user)
 
+asyncio.get_event_loop() \
+    .run_until_complete(user.save())
+
+assert '_id' in user
 ```
+
+## API Reference ##
+
+### Doc ###
+* #### `__database__` ####
+    Description
+    
+* #### `__collection__` ####
+    Description
+
+* #### `__abstract__` ####
+    Description
+
+* #### `__loop__` ####
+    Description
+
+* #### `__init_data__` ####
+  Description
+
+* #### `manager` ####
+    Description
+
+* #### `_as_dict()` ####
+    Description
+    
+* #### `save()` ####
+    Description
+
+* #### `delete()` ####
+    Description
+
+* #### `refresh()` ####
+    Description
+
+### Manager ###
