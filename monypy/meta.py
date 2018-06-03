@@ -13,6 +13,7 @@ DOC_INIT_DATA = '__init_data__'
 DOC_DATABASE = '__database__'
 DOC_LOOP = '__loop__'
 DOC_COLLECTION = '__collection__'
+DOC_ABSTRACT = '__abstract__'
 
 
 class DocMeta(type):
@@ -21,10 +22,11 @@ class DocMeta(type):
         loop = clsargs.pop(DOC_LOOP, find(bases, DOC_LOOP))
         collection = clsargs.pop(DOC_COLLECTION, find(bases, DOC_COLLECTION))
         clsargs[DOC_INIT_DATA] = clsargs.pop(DOC_INIT_DATA, find(bases, DOC_INIT_DATA) or {})
+        abstract = clsargs.pop(DOC_ABSTRACT, False)
 
         cls = super().__new__(mcs, name, bases, clsargs)
 
-        if database:
+        if database and not abstract:
             db_name = database.pop('name')
             database.update(io_loop=loop)
             client = connect(**database)

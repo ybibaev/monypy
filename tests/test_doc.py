@@ -1,6 +1,7 @@
 import pytest
 
 from monypy import Doc
+from monypy import connection
 
 
 @pytest.mark.asyncio
@@ -72,6 +73,34 @@ async def test_change_collection_name(event_loop, settings):
 @pytest.mark.asyncio
 async def test_collection_name(empty_doc):
     assert empty_doc.manager.name == 'emptydoc'
+
+
+@pytest.mark.asyncio
+async def test_abstract_doc(event_loop, settings):
+    class AbstractDoc(settings, Doc):
+        __abstract__ = True
+
+        __loop__ = event_loop
+
+    assert len(connection._connections) == 0
+
+
+@pytest.mark.asyncio
+async def test_inheritance_from_abstract_doc(event_loop, settings):
+    class AbstractDoc(settings, Doc):
+        __init_data__ = {
+            'test': 'test'
+        }
+
+        __abstract__ = True
+
+        __loop__ = event_loop
+
+    class EmptyDoc(AbstractDoc):
+        pass
+
+    assert len(connection._connections) == 1
+    assert 'test' in EmptyDoc()
 
 
 @pytest.mark.asyncio

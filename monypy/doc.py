@@ -60,9 +60,13 @@ class Doc(DocBase):
     manager_class = Manager
 
     __init_data__ = None
+
     __collection__ = None
     __database__ = None
+
     __loop__ = None
+
+    __abstract__ = False
 
     async def save(self):
         if MONGO_ID_KEY not in self:
