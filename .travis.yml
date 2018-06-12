@@ -8,7 +8,7 @@ services:
 
 install:
   - pip install pipenv
-  - pipenv install --dev --system
+  - pipenv install --dev --system --deploy
 
 before_script:
   - sleep 10
@@ -17,3 +17,14 @@ script:
   - set PYTHONPATH=.
   - flake8
   - python -m pytest
+
+deploy:
+  provider: pypi
+  user: nedel
+  password:
+    secure: test_secure
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: nede1/monypy
+    python: '3.6'
