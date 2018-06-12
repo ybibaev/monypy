@@ -68,15 +68,15 @@ assert '_id' in user
     Description
 
 * #### `_as_dict()` ####
-    Description
+    Returns the object as a __dict__.
     
 * #### `save()` ####
-    Description
+    __сoroutine__. Saves the object in the database if it does not exist, if it exists, it updates.
 
 * #### `delete()` ####
-    Description
+    __сoroutine__. Removes an object from the database. If the object does not exist, then the __DocumentDoesNotExistError__ exception is raised.
 
 * #### `refresh()` ####
-    Description
+    __сoroutine__. Updates an object from the database. If the object does not exist, then the __DocumentDoesNotExistError__ exception is raised.
 
 ### Manager ###
