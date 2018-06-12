@@ -10,11 +10,11 @@ motor >= 1.2.0
 
 ## Installation ##
 ```bash
-pipenv install git+https://github.com/nede1/monypy#egg=monypy
+pipenv install monypy
 ```
 
 ## Quick Start ##
-```python
+```pythonstub
 import asyncio
 from monypy import Doc
 
@@ -50,22 +50,33 @@ assert '_id' in user
 
 ### Doc ###
 * #### `__database__` ####
-    Description
+    Attribute for setting up the database. Parameters:
+    * `name` - the name of the database
+    
+    List of other optional parameters [here](https://api.mongodb.com/python/current/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient).
     
 * #### `__collection__` ####
-    Description
+    __optional__. Attribute for setting up the collection. Parameters: 
+    * `name` - the name of the collection
 
 * #### `__abstract__` ####
-    Description
+    __optional__. If `True`,  then the collection will not create a connection to the database.
 
 * #### `__loop__` ####
-    Description
+    __optional__. Special event loop instance to use instead of default.
 
 * #### `__init_data__` ####
-  Description
+  __optional__. Sets the initializing data for all objects in the collection when the object is initialized. If the value is callable, an instance will be passed to the value and called.
 
 * #### `manager` ####
-    Description
+    The class attribute for database queries.
+    Example: 
+    ```pythonstub
+    users_count = await User.manager.count()
+    assert users_count == 1
+    ```
+* #### `manager_class` ####
+    __optional__. Set a custom manager class. [Learn more](#manager-1).
 
 * #### `_as_dict()` ####
     Returns the object as a __dict__.
@@ -80,3 +91,33 @@ assert '_id' in user
     __сoroutine__. Updates an object from the database. If the object does not exist, then the __DocumentDoesNotExistError__ exception is raised.
 
 ### Manager ###
+A simple wrapper over [AsyncIOMotorCollection](https://motor.readthedocs.io/en/stable/api-asyncio/asyncio_motor_collection.html#motor.motor_asyncio.AsyncIOMotorCollection).
+Example:
+```pythonstub
+from monypy import Doc, Manager
+
+class UserManager(Manager):
+    def get_active(self):
+        return self.find({'active': True})
+        
+        
+class User(Doc):
+    manager_class = UserManager
+
+    __database__ = {
+        'name': 'test'
+    }
+    
+    __init_data__ = {
+        'active': True,
+    }
+
+await User().save()
+await User(active=False).save()
+
+assert await User.manager.count() == 2
+assert await User.manager.get_active().count() == 1
+
+assert len([u async for u in User.manager.get_active()]) == 1
+
+```
