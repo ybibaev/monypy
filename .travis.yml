@@ -22,7 +22,7 @@ deploy:
   provider: pypi
   user: nedel
   password:
-    secure: test_secure
+    secure: mRBVBABIgMGORV5iF2YdmSRaULJ/QC4YpoVtyqssAxy2UB7p5X/t+H97GU6qufMDwE8NIBqui/ejOQbrpLj6e5sJgE66Y7OL428Nsxer8JBn0d76YxoRLKnM08ORMdu86UkmuPVpVA2G1ZzZ+IWfE1uhBycFkj96EaO579zvL/1A1yB7CPwV1tiRS3yepYnB4IyKxrMOENm0NwJbSVy+N78uHIAbSejZlblJnk+geb1ZoUMo0e5htT5pMv9/ziegEs5HZX1XlHxYySc1sW9VB6ZdqLlqWHyMVfbYl8qeXZThpVFKPLFhx2Vkfh2ERwuw/5VLC/07mAMhF5Dar2+z956g4OXTyU+JYXQnROCHfl3eRgHSyQ+e3pP8ovLjR0Zz4qMfeCi0o+9+a1O2fWRgh9Uqh2bi7LHU6u2wnH5Epac9E8eddHcf1+LAO5Kop0gCBAkv75wGhbj3IIB+sS4uYQd7jaYQpIOvT+XGdEPEvaZLln1Jhhy3LFU5/xoizJMXaIkrPWgUnZcA7HQdhP9YdNydkgjVp51WKJkS8ZXJ9d6ZGEtL+UKIkDLUzV7x/iSX+aXeZV0xrin7RpfUFFDo8h1dxfcnhaxW97fvsSRb1FgttiJHupER1gZf6yvcbeF1P2TUznh5Ztk37IsTBT7zpMIn/plQ/l4QcmosrIcynzU=
   on:
     tags: true
     distributions: sdist bdist_wheel
