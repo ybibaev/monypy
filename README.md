@@ -14,7 +14,7 @@ pipenv install monypy
 ```
 
 ## Quick Start ##
-```pythonstub
+```python
 import asyncio
 from monypy import Doc
 
@@ -71,7 +71,7 @@ assert '_id' in user
 * #### `manager` ####
     The class attribute for database queries.
     Example: 
-    ```pythonstub
+    ```python
     users_count = await User.manager.count()
     assert users_count == 1
     ```
@@ -93,7 +93,7 @@ assert '_id' in user
 ### Manager ###
 A simple wrapper over [AsyncIOMotorCollection](https://motor.readthedocs.io/en/stable/api-asyncio/asyncio_motor_collection.html#motor.motor_asyncio.AsyncIOMotorCollection).
 Example:
-```pythonstub
+```python
 from monypy import Doc, Manager
 
 class UserManager(Manager):
