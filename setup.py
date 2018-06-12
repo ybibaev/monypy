@@ -30,7 +30,7 @@ setup(
     ],
 
     packages=find_packages(exclude=['tests*']),
-    install_requires=['motor>=1.2.0'],
+    install_requires=['motor>=1.2.0', 'bson'],
     setup_requires=['pytest-asyncio', 'flake8'],
     tests_require=['pytest-asyncio']
 )
