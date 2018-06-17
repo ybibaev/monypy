@@ -1,14 +1,21 @@
-from setuptools import setup, find_packages
+import re
 
-import monypy
+from setuptools import setup, find_packages
 
 with open('README.md') as fh:
     long_description = fh.read()
 
+with open('monypy/__init__.py') as f:
+    version = (
+        re.search(
+            r"__version__ = '([^']+)",
+            f.read()
+        ).group(1)
+    )
 
 setup(
     name='monypy',
-    version=monypy.__version__,
+    version=version,
     description='Asynchronous lightweight ODM for mongodb',
     keywords='asyncio mongodb',
     url='http://github.com/nede1/monypy',
@@ -30,7 +37,7 @@ setup(
     ],
 
     packages=find_packages(exclude=['tests*']),
-    install_requires=['motor>=1.2', 'pymongo>=3.6'],
+    install_requires=['motor>=1.2'],
     setup_requires=['pytest-asyncio', 'flake8'],
     tests_require=['pytest-asyncio']
 )
