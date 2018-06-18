@@ -4,9 +4,9 @@ from monypy import Doc
 from monypy import connection
 
 
-@pytest.fixture
-def settings():
-    connection._connections.clear()
+@pytest.fixture()
+def settings(request):
+    request.addfinalizer(connection._connections.clear)
 
     class DBSettings:
         __database__ = {
@@ -14,7 +14,6 @@ def settings():
             'host': 'localhost',
             'port': 27017
         }
-
     return DBSettings
 
 

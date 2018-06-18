@@ -18,23 +18,28 @@ DOC_ABSTRACT = '__abstract__'
 
 class DocMeta(type):
     def __new__(mcs, name, bases, clsargs):
+        abstract = clsargs.pop(DOC_ABSTRACT, False)
+        if abstract:
+            return super().__new__(mcs, name, bases, clsargs)
+
         database = clsargs.pop(DOC_DATABASE, find(bases, DOC_DATABASE))
+        if not database:
+            return super().__new__(mcs, name, bases, clsargs)
+
         loop = clsargs.pop(DOC_LOOP, find(bases, DOC_LOOP))
         collection = clsargs.pop(DOC_COLLECTION, find(bases, DOC_COLLECTION))
         clsargs[DOC_INIT_DATA] = clsargs.pop(DOC_INIT_DATA, find(bases, DOC_INIT_DATA) or {})
-        abstract = clsargs.pop(DOC_ABSTRACT, False)
 
         cls = super().__new__(mcs, name, bases, clsargs)
 
-        if database and not abstract:
-            db_name = database.pop('name')
-            database.update(io_loop=loop)
-            client = connect(**database)
+        db_name = database.pop('name')
+        database.update(io_loop=loop)
+        client = connect(**database)
 
-            db = client[db_name]
-            db_collection = create_db_collection(cls, db, collection)
+        db = client[db_name]
+        db_collection = create_db_collection(cls, db, collection)
 
-            cls.manager = manager_factory(cls, db_collection)
+        cls.manager = manager_factory(cls, db_collection)
 
         return cls
 
