@@ -22,24 +22,26 @@ class DocMeta(type):
         if abstract:
             return super().__new__(mcs, name, bases, clsargs)
 
-        database = clsargs.pop(DOC_DATABASE, find(bases, DOC_DATABASE))
-        if not database:
+        database_attrs = clsargs.pop(
+            DOC_DATABASE, find(bases, DOC_DATABASE)
+        )
+        if not database_attrs:
             return super().__new__(mcs, name, bases, clsargs)
 
         loop = clsargs.pop(DOC_LOOP, find(bases, DOC_LOOP))
-        collection = clsargs.pop(DOC_COLLECTION, find(bases, DOC_COLLECTION))
-        clsargs[DOC_INIT_DATA] = clsargs.pop(DOC_INIT_DATA, find(bases, DOC_INIT_DATA) or {})
+        collection_attrs = clsargs.pop(
+            DOC_COLLECTION, find(bases, DOC_COLLECTION)
+        )
+        clsargs[DOC_INIT_DATA] = clsargs.pop(
+            DOC_INIT_DATA, find(bases, DOC_INIT_DATA) or {}
+        )
 
         cls = super().__new__(mcs, name, bases, clsargs)
 
-        db_name = database.pop('name')
-        database.update(io_loop=loop)
-        client = connect(**database)
+        db = get_database(loop, **database_attrs)
+        collection = create_db_collection(cls, db, collection_attrs)
 
-        db = client[db_name]
-        db_collection = create_db_collection(cls, db, collection)
-
-        cls.manager = manager_factory(cls, db_collection)
+        cls.manager = manager_factory(cls, collection)
 
         return cls
 
@@ -50,29 +52,36 @@ class DocMeta(type):
         init_data = copy.deepcopy(
             args[0] if args else kwargs
         )
+        check_init_data(init_data)
 
-        if not isinstance(init_data, dict):
-            raise DocumentInitDataError('Init data must be an instance of dict')
-
-        instance = super().__call__()
-        instance.__dict__[DOC_DATA] = {}
-
-        defaults = copy.deepcopy(
+        default_init_data = copy.deepcopy(
             cls.__dict__.get(DOC_INIT_DATA, {})
         )
+        check_init_data(default_init_data)
 
-        if not isinstance(init_data, dict):
-            raise DocumentInitDataError('Init data must be an instance of dict')
-
-        defaults.update(init_data)
+        instance = super().__call__()
+        defaults = instance.__dict__[DOC_DATA] = {
+            **default_init_data, **init_data
+        }
 
         for k, v in defaults.items():
             if callable(v):
                 defaults[k] = v(instance)
 
-        instance.__dict__[DOC_DATA].update(defaults)
-
         return instance
+
+
+def check_init_data(init_data):
+    if not isinstance(init_data, dict):
+        raise DocumentInitDataError('Init data must be an instance of dict')
+
+
+def get_database(loop, **database_attrs):
+    attrs = dict(database_attrs)
+    db_name = attrs.pop('name')
+    attrs.update(io_loop=loop)
+    client = connect(**attrs)
+    return client[db_name]
 
 
 def manager_factory(doc_class, collection):

@@ -130,6 +130,38 @@ async def test_inheritance_from_abstract_doc_two(event_loop, settings):
 
 
 @pytest.mark.asyncio
+async def test_inheritance_from_abstract_doc_twice(event_loop, settings):
+    class AbstractDoc(Doc):
+        __init_data__ = {
+            'test': 'test'
+        }
+
+        __database__ = {
+            'name': 'test',
+            'host': 'localhost',
+            'port': 27017
+        }
+
+        __abstract__ = True
+
+        __loop__ = event_loop
+
+    class EmptyDoc(AbstractDoc):
+        pass
+
+    class EmptyDocTwo(AbstractDoc):
+        pass
+
+    assert len(connection._connections) == 1
+
+    assert 'test' in EmptyDoc()
+    assert 'test' in EmptyDocTwo()
+
+    assert await EmptyDoc.manager.count() == 0
+    assert await EmptyDocTwo.manager.count() == 0
+
+
+@pytest.mark.asyncio
 async def test_non_equality(empty_doc):
     doc_1 = empty_doc(name='doc_1')
     doc_2 = empty_doc(name='doc_2')
