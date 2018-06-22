@@ -123,4 +123,3 @@ def find(classes, token):
 
     with suppress(StopIteration):
         return next(filter(bool, map(_find, classes)))
-
