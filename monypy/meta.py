@@ -53,6 +53,7 @@ class DocMeta(type):
         instance.__dict__[DOC_DATA] = {**default_init_data, **init_data}
 
         cls.prepare_instance_data(instance)
+
         return instance
 
     def get_init_data(cls, *args, **kwargs):
@@ -95,11 +96,11 @@ def get_collection(doc_class, db, data):
     except TypeError:
         collection_name = doc_class.__name__.lower()
 
-    collection_codec_options = DEFAULT_CODEC_OPTIONS \
-        .with_options(document_class=doc_class)
+    collection_codec_options = (DEFAULT_CODEC_OPTIONS
+                                .with_options(document_class=doc_class))
 
-    return db[collection_name] \
-        .with_options(collection_codec_options)
+    return (db[collection_name]
+            .with_options(collection_codec_options))
 
 
 def manager_factory(doc_class, collection):
@@ -114,12 +115,9 @@ def manager_factory(doc_class, collection):
 
 def find(classes, token):
     def _find(cls):
-        nonlocal token
-
         for c in cls.__mro__:
-            target = c.__dict__.get(token)
-            if target:
-                return target
+            if token in c.__dict__:
+                return c.__dict__[token]
 
     with suppress(StopIteration):
         return next(filter(bool, map(_find, classes)))
