@@ -66,11 +66,11 @@ assert '_id' in user
     __optional__. Special event loop instance to use instead of default.
 
 * #### `__init_data__` ####
-  __optional__. Sets the initializing data for all objects in the collection when the object is initialized. If the value is callable, an instance will be passed to the value and called.
+  __optional__. Set the initializing data for all objects in the collection when the object is initialized. If the value is callable, an instance will be passed as an argument.
 
 * #### `manager` ####
     The class attribute for database queries.
-    Example: 
+    For example: 
     ```python
     users_count = await User.manager.count()
     assert users_count == 1
@@ -79,20 +79,20 @@ assert '_id' in user
     __optional__. Set a custom manager class. [Learn more](#manager-1).
 
 * #### `_as_dict()` ####
-    Returns the object as a __dict__.
+    Return the object as a __dict__.
     
 * #### `save()` ####
-    __сoroutine__. Saves the object in the database if it does not exist, if it exists, it updates.
+    __сoroutine__. It saves the object in the database.
 
 * #### `delete()` ####
-    __сoroutine__. Removes an object from the database. If the object does not exist, then the __DocumentDoesNotExistError__ exception is raised.
+    __сoroutine__. It remove an object from the database. If the object does not exist in the database, then the __DocumentDoesNotExistError__ exception will be raised.
 
 * #### `refresh()` ####
-    __сoroutine__. Updates an object from the database. If the object does not exist, then the __DocumentDoesNotExistError__ exception is raised.
+    __сoroutine__. Refresh the current object from the same object from the database. If the object does not exist in the database, then the __DocumentDoesNotExistError__ exception will be raised.
 
 ### Manager ###
 A simple wrapper over [AsyncIOMotorCollection](https://motor.readthedocs.io/en/stable/api-asyncio/asyncio_motor_collection.html#motor.motor_asyncio.AsyncIOMotorCollection).
-Example:
+For example:
 ```python
 from monypy import Doc, Manager
 
