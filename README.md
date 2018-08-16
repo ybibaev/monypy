@@ -4,8 +4,8 @@
 
 ## Dependencies ##
 ```
-python >= 3.6
-motor >= 1.2.0
+python == 3.6
+1.2.0 <= motor < 2.0
 ```
 
 ## Installation ##
