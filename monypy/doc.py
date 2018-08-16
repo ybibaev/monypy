@@ -1,4 +1,5 @@
 import reprlib
+from collections import MutableMapping
 
 from .exceptions import DocumentDoesNotExistError
 from .manager import Manager
@@ -7,7 +8,7 @@ from .meta import DocMeta, DOC_DATA
 MONGO_ID_KEY = '_id'
 
 
-class DocBase(dict, metaclass=DocMeta):  # TODO: inheritance from collection.MutableMapping
+class DocBase(MutableMapping, metaclass=DocMeta):
     def __getitem__(self, item):
         return self.__dict__[DOC_DATA][item]
 

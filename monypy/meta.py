@@ -1,3 +1,4 @@
+import abc
 import copy
 from contextlib import suppress
 
@@ -16,7 +17,7 @@ DOC_COLLECTION = '__collection__'
 DOC_ABSTRACT = '__abstract__'
 
 
-class DocMeta(type):
+class DocBaseMeta(type):
     def __new__(mcs, name, bases, clsargs):
         abstract = clsargs.pop(DOC_ABSTRACT, False)
         if abstract:
@@ -121,3 +122,7 @@ def find(classes, token):
 
     with suppress(StopIteration):
         return next(filter(bool, map(_find, classes)))
+
+
+class DocMeta(DocBaseMeta, abc.ABCMeta):
+    pass
