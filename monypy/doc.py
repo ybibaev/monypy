@@ -9,6 +9,9 @@ MONGO_ID_KEY = '_id'
 
 
 class DocBase(MutableMapping, metaclass=DocMeta):
+    def __init__(self, **kwargs):
+        pass
+
     def __getitem__(self, item):
         return self.__dict__[DOC_DATA][item]
 

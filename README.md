@@ -1,4 +1,4 @@
-# monypy - asynchronous lightweight ODM for MongoDB 
+# monypy - asynchronous lightweight ODM for MongoDB based on [motor](https://github.com/mongodb/motor)
 
 [![Build Status](https://travis-ci.org/nede1/monypy.svg?branch=master)](https://travis-ci.org/nede1/monypy)
 
@@ -31,7 +31,7 @@ class User(Doc):
         'port': 27017
     }
     
-user = User({'name': 'John'})
+user = User(name='John')
 
 assert '_id' not in user
 assert user.name == 'John'

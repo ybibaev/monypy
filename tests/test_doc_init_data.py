@@ -1,15 +1,12 @@
 import pytest
 
 from monypy import Doc
-from monypy.exceptions import DocumentInitDataError
 
 
 @pytest.mark.asyncio
 async def test_init_data_as_dict(empty_doc):
-    empty = empty_doc({'test_1': 'test_1', 'test': 'test_2'})
-
-    assert empty['test_1'] == 'test_1'
-    assert empty['test'] == 'test_2'
+    with pytest.raises(TypeError):
+        empty_doc({'test_1': 'test_1', 'test': 'test_2'})
 
 
 @pytest.mark.asyncio
@@ -22,7 +19,7 @@ async def test_init_data_as_kwargs(empty_doc):
 
 @pytest.mark.asyncio
 async def test_init_data_as_dict_and_kwargs(empty_doc):
-    with pytest.raises(DocumentInitDataError):
+    with pytest.raises(TypeError):
         empty_doc({'test_1': 'test_1', 'test': 'test_2'}, x=45)
 
 
