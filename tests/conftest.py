@@ -19,10 +19,9 @@ def settings(request):
 
 @pytest.fixture
 @pytest.mark.asyncio
-async def empty_doc(event_loop, settings):
+async def empty_doc(settings):
     class EmptyDoc(settings, Doc):
-        __loop__ = event_loop
-
+        pass
     try:
         yield EmptyDoc
 

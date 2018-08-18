@@ -65,8 +65,6 @@ async def test_change_collection_name(event_loop, settings):
             'name': 'test_doc'
         }
 
-        __loop__ = event_loop
-
     assert EmptyDoc.manager.name == 'test_doc'
 
 
@@ -76,17 +74,15 @@ async def test_collection_name(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_abstract_doc(event_loop, settings):
+async def test_abstract_doc(settings):
     class AbstractDoc(settings, Doc):
         __abstract__ = True
-
-        __loop__ = event_loop
 
     assert len(connection._connections) == 0
 
 
 @pytest.mark.asyncio
-async def test_inheritance_from_abstract_doc(event_loop, settings):
+async def test_inheritance_from_abstract_doc(settings):
     class AbstractDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
@@ -94,8 +90,6 @@ async def test_inheritance_from_abstract_doc(event_loop, settings):
 
         __abstract__ = True
 
-        __loop__ = event_loop
-
     class EmptyDoc(AbstractDoc):
         pass
 
@@ -105,7 +99,7 @@ async def test_inheritance_from_abstract_doc(event_loop, settings):
 
 
 @pytest.mark.asyncio
-async def test_inheritance_from_abstract_doc_two(event_loop, settings):
+async def test_inheritance_from_abstract_doc_two(settings):
     class AbstractDoc(Doc):
         __init_data__ = {
             'test': 'test'
@@ -119,7 +113,6 @@ async def test_inheritance_from_abstract_doc_two(event_loop, settings):
 
         __abstract__ = True
 
-        __loop__ = event_loop
 
     class EmptyDoc(AbstractDoc):
         pass
@@ -130,7 +123,7 @@ async def test_inheritance_from_abstract_doc_two(event_loop, settings):
 
 
 @pytest.mark.asyncio
-async def test_inheritance_from_abstract_doc_twice(event_loop, settings):
+async def test_inheritance_from_abstract_doc_twice(settings):
     class AbstractDoc(Doc):
         __init_data__ = {
             'test': 'test'
@@ -143,8 +136,6 @@ async def test_inheritance_from_abstract_doc_twice(event_loop, settings):
         }
 
         __abstract__ = True
-
-        __loop__ = event_loop
 
     class EmptyDoc(AbstractDoc):
         pass

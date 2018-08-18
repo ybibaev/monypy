@@ -8,7 +8,6 @@ DOC_DATA = '#data'
 
 DOC_INIT_DATA = '__init_data__'
 DOC_DATABASE = '__database__'
-DOC_LOOP = '__loop__'
 DOC_COLLECTION = '__collection__'
 DOC_ABSTRACT = '__abstract__'
 
@@ -25,7 +24,6 @@ class DocBaseMeta(type):
         if not database_attrs:
             return super().__new__(mcs, name, bases, clsargs)
 
-        loop = clsargs.pop(DOC_LOOP, find_token(bases, DOC_LOOP))
         collection_attrs = clsargs.pop(
             DOC_COLLECTION, find_token(bases, DOC_COLLECTION)
         )
@@ -35,7 +33,7 @@ class DocBaseMeta(type):
 
         cls = super().__new__(mcs, name, bases, clsargs)
 
-        db = get_database(loop, **database_attrs)
+        db = get_database(**database_attrs)
         collection = get_collection(cls, db, collection_attrs)
 
         cls.manager = manager_factory(cls, collection)

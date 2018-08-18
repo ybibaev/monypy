@@ -4,8 +4,8 @@
 
 ## Dependencies ##
 ```
-python >= 3.6
-motor >= 1.2.0
+python <= 3.7
+motor >= 2.0
 ```
 
 ## Installation ##
@@ -40,8 +40,7 @@ assert user.sex == 'male'
 assert not callable(user.instance_id)
 assert user.instance_id == id(user)
 
-asyncio.get_event_loop() \
-    .run_until_complete(user.save())
+asyncio.run(user.save())
 
 assert '_id' in user
 ```
@@ -63,7 +62,7 @@ assert '_id' in user
     __optional__. If `True`,  then the collection will not create a connection to the database.
 
 * #### `__loop__` ####
-    __optional__. Special event loop instance to use instead of default.
+    removed in version 1.2
 
 * #### `__init_data__` ####
   __optional__. Set the initializing data for all objects in the collection when the object is initialized. If the value is callable, an instance will be passed as an argument.
@@ -72,7 +71,7 @@ assert '_id' in user
     The class attribute for database queries.
     For example: 
     ```python
-    users_count = await User.manager.count()
+    users_count = await User.manager.count_documents({})
     assert users_count == 1
     ```
 * #### `manager_class` ####
@@ -97,8 +96,8 @@ For example:
 from monypy import Doc, Manager
 
 class UserManager(Manager):
-    def get_active(self):
-        return self.find({'active': True})
+    async def count_active(self):
+        return await self.count_documents({'active': True})
         
         
 class User(Doc):
@@ -116,8 +115,6 @@ await User().save()
 await User(active=False).save()
 
 assert await User.manager.count() == 2
-assert await User.manager.get_active().count() == 1
-
-assert len([u async for u in User.manager.get_active()]) == 1
+assert await User.manager.count_active() == 1
 
 ```

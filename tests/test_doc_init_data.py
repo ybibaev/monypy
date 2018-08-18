@@ -56,13 +56,11 @@ async def test_init_data_with_callable(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_init_data_in_class_definition(event_loop, settings):
+async def test_init_data_in_class_definition(settings):
     class EmptyDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
         }
-
-        __loop__ = event_loop
 
     empty = EmptyDoc()
     assert empty.test == 'test'
@@ -71,27 +69,25 @@ async def test_init_data_in_class_definition(event_loop, settings):
 
 
 @pytest.mark.asyncio
-async def test_init_data_in_class_and_kwargs(event_loop, settings):
+async def test_init_data_in_class_and_kwargs(settings):
     class EmptyDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
         }
-
-        __loop__ = event_loop
 
     empty = EmptyDoc(test='test_45')
     assert empty.test == 'test_45'
 
 
 @pytest.mark.asyncio
-async def test_init_data_in_class_inheritance(event_loop, settings):
+async def test_init_data_in_class_inheritance(settings):
     class InitData:
         __init_data__ = {
             'test': 'test'
         }
 
     class EmptyDoc(settings, InitData, Doc):
-        __loop__ = event_loop
+        pass
 
     empty = EmptyDoc()
 

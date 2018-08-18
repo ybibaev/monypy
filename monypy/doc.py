@@ -65,8 +65,6 @@ class Doc(DocBase):
     __collection__ = None
     __database__ = None
 
-    __loop__ = None
-
     __abstract__ = False
 
     async def save(self):

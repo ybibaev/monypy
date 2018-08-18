@@ -17,7 +17,7 @@ async def test_get_manger_from_class(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_custom_manager_method(event_loop, settings):
+async def test_custom_manager_method(settings):
     class EmptyDocManager(Manager):
         async def count_emtpy(self):
             return await self.count_documents({'empty': True})
@@ -28,8 +28,6 @@ async def test_custom_manager_method(event_loop, settings):
         __init_data__ = {
             'empty': True,
         }
-
-        __loop__ = event_loop
 
     await EmptyDoc().save()
     await EmptyDoc(empty=False).save()

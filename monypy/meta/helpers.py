@@ -7,10 +7,9 @@ from ..connection import connect
 from ..manager import Manager, ManagerDescriptor
 
 
-def get_database(loop, **database_attrs):
+def get_database(**database_attrs):
     attrs = dict(database_attrs)
     db_name = attrs.pop('name')
-    attrs.update(io_loop=loop)
     client = connect(**attrs)
     return client[db_name]
 
