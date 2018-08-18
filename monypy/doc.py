@@ -82,7 +82,6 @@ class Doc(DocBase):
             raise DocumentDoesNotExistError
 
         await type(self).manager.delete_one({MONGO_ID_KEY: self._id})
-
         del self._id
 
     async def refresh(self):

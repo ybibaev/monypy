@@ -22,12 +22,8 @@ def create_motor_client(**kwargs):
     return AsyncIOMotorClient(**kwargs, io_loop=loop)
 
 
-def get_collection(doc_class, db, data):
-    try:
-        collection_name = data['name']
-    except TypeError:
-        collection_name = doc_class.__name__.lower()
-
+def get_collection(doc_class, db, **options):
+    collection_name = options.get('name') or doc_class.__name__.lower()
     collection_codec_options = (DEFAULT_CODEC_OPTIONS
                                 .with_options(document_class=doc_class))
 

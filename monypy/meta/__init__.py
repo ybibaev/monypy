@@ -28,7 +28,7 @@ class DocBaseMeta(type):
 
         collection_attrs = clsargs.pop(
             DOC_COLLECTION,
-            find_token(bases, DOC_COLLECTION)
+            find_token(bases, DOC_COLLECTION) or {}
         )
         clsargs[DOC_INIT_DATA] = clsargs.pop(
             DOC_INIT_DATA,
@@ -38,7 +38,7 @@ class DocBaseMeta(type):
         cls = super().__new__(mcs, name, bases, clsargs)
 
         db = get_database(**database_attrs)
-        collection = get_collection(cls, db, collection_attrs)
+        collection = get_collection(cls, db, **collection_attrs)
         cls.manager = manager_factory(cls, collection)
 
         return cls
