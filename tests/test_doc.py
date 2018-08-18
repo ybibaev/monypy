@@ -113,7 +113,6 @@ async def test_inheritance_from_abstract_doc_two(settings):
 
         __abstract__ = True
 
-
     class EmptyDoc(AbstractDoc):
         pass
 
