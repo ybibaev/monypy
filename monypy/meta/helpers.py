@@ -1,17 +1,25 @@
+import asyncio
 from contextlib import suppress
+from functools import lru_cache
 from itertools import chain
 
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
+from motor.motor_asyncio import AsyncIOMotorClient
 
-from ..connection import connect
 from ..manager import Manager, ManagerDescriptor
 
 
 def get_database(**database_attrs):
     attrs = dict(database_attrs)
     db_name = attrs.pop('name')
-    client = connect(**attrs)
+    client = create_motor_client(**attrs)
     return client[db_name]
+
+
+@lru_cache(maxsize=100, typed=True)
+def create_motor_client(**kwargs):
+    loop = asyncio.get_running_loop()
+    return AsyncIOMotorClient(**kwargs, io_loop=loop)
 
 
 def get_collection(doc_class, db, data):

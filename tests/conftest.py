@@ -1,12 +1,12 @@
 import pytest
 
 from monypy import Doc
-from monypy import connection
+from monypy.meta.helpers import create_motor_client
 
 
 @pytest.fixture()
 def settings(request):
-    request.addfinalizer(connection._connections.clear)
+    request.addfinalizer(create_motor_client.cache_clear)
 
     class DBSettings:
         __database__ = {

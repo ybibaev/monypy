@@ -1,7 +1,7 @@
 import pytest
 
 from monypy import Doc
-from monypy import connection
+from monypy.meta.helpers import create_motor_client
 
 
 @pytest.mark.asyncio
@@ -78,7 +78,7 @@ async def test_abstract_doc(settings):
     class AbstractDoc(settings, Doc):
         __abstract__ = True
 
-    assert len(connection._connections) == 0
+    assert create_motor_client.cache_info().currsize == 0
 
 
 @pytest.mark.asyncio
@@ -93,7 +93,7 @@ async def test_inheritance_from_abstract_doc(settings):
     class EmptyDoc(AbstractDoc):
         pass
 
-    assert len(connection._connections) == 1
+    assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
     assert await EmptyDoc.manager.count_documents({}) == 0
 
@@ -116,7 +116,7 @@ async def test_inheritance_from_abstract_doc_two(settings):
     class EmptyDoc(AbstractDoc):
         pass
 
-    assert len(connection._connections) == 1
+    assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
     assert await EmptyDoc.manager.count_documents({}) == 0
 
@@ -142,7 +142,7 @@ async def test_inheritance_from_abstract_doc_twice(settings):
     class EmptyDocTwo(AbstractDoc):
         pass
 
-    assert len(connection._connections) == 1
+    assert create_motor_client.cache_info().currsize == 1
 
     assert 'test' in EmptyDoc()
     assert 'test' in EmptyDocTwo()
