@@ -13,14 +13,14 @@ async def test_get_manger_from_instance(empty_doc):
 
 @pytest.mark.asyncio
 async def test_get_manger_from_class(empty_doc):
-    assert 0 == await empty_doc.manager.count()
+    assert 0 == await empty_doc.manager.count_documents({})
 
 
 @pytest.mark.asyncio
 async def test_custom_manager_method(event_loop, settings):
     class EmptyDocManager(Manager):
-        def get_empty(self):
-            return self.find({'empty': True})
+        async def count_emtpy(self):
+            return await self.count_documents({'empty': True})
 
     class EmptyDoc(settings, Doc):
         manager_class = EmptyDocManager
@@ -35,8 +35,8 @@ async def test_custom_manager_method(event_loop, settings):
     await EmptyDoc(empty=False).save()
 
     try:
-        assert await EmptyDoc.manager.count() == 2
-        assert await EmptyDoc.manager.get_empty().count() == 1
+        assert await EmptyDoc.manager.count_documents({}) == 2
+        assert await EmptyDoc.manager.count_emtpy() == 1
 
     finally:
         await EmptyDoc.manager.drop()

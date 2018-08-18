@@ -101,7 +101,7 @@ async def test_inheritance_from_abstract_doc(event_loop, settings):
 
     assert len(connection._connections) == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.manager.count() == 0
+    assert await EmptyDoc.manager.count_documents({}) == 0
 
 
 @pytest.mark.asyncio
@@ -126,7 +126,7 @@ async def test_inheritance_from_abstract_doc_two(event_loop, settings):
 
     assert len(connection._connections) == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.manager.count() == 0
+    assert await EmptyDoc.manager.count_documents({}) == 0
 
 
 @pytest.mark.asyncio
@@ -157,8 +157,8 @@ async def test_inheritance_from_abstract_doc_twice(event_loop, settings):
     assert 'test' in EmptyDoc()
     assert 'test' in EmptyDocTwo()
 
-    assert await EmptyDoc.manager.count() == 0
-    assert await EmptyDocTwo.manager.count() == 0
+    assert await EmptyDoc.manager.count_documents({}) == 0
+    assert await EmptyDocTwo.manager.count_documents({}) == 0
 
 
 @pytest.mark.asyncio
