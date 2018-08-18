@@ -33,10 +33,11 @@ def get_collection(doc_class, db, **options):
 
 def manager_factory(doc_class, collection):
     manager_doc_class = doc_class.manager_class
-    manager_class = (manager_doc_class.for_doc(doc_class)
-                     if manager_doc_class is Manager
-                     else manager_doc_class)
-
+    manager_class = (
+        manager_doc_class.for_doc(doc_class)
+        if manager_doc_class is Manager
+        else manager_doc_class
+    )
     manager = manager_class(collection)
     return ManagerDescriptor(manager)
 
