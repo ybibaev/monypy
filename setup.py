@@ -28,7 +28,7 @@ setup(
     license='MIT',
 
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 3 - Alpha',
         'Framework :: AsyncIO',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.7',
