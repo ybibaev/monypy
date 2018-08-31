@@ -38,3 +38,14 @@ async def test_custom_manager_method(settings):
 
     finally:
         await EmptyDoc.manager.drop()
+
+
+@pytest.mark.asyncio
+async def test_manager_create(empty_doc):
+    assert await empty_doc.manager.count_documents({}) == 0
+    obj = await empty_doc.manager.create(test='test')
+
+    assert await empty_doc.manager.count_documents({}) == 1
+    assert obj is not None
+    assert 'test' in obj
+    assert '_id' in obj

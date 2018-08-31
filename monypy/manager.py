@@ -1,7 +1,9 @@
+import weakref
+
 DEFAULT_MANAGER_CLASS_NAME = 'Manager'
 
 
-class Manager:
+class BaseManager:
     def __init__(self, collection):
         self.__collection = collection
 
@@ -10,8 +12,26 @@ class Manager:
 
     @classmethod
     def for_doc(cls, doc_class):
+        from .doc import DocBase
+
+        assert issubclass(doc_class, DocBase)
+
         manager_class_name = f'{doc_class.__name__}{DEFAULT_MANAGER_CLASS_NAME}'
-        return type(manager_class_name, (cls,), {})
+        return type(manager_class_name, (cls,), {
+            '__doc_class': weakref.ref(doc_class),
+        })
+
+    @property
+    def _doc_class(self):
+        ref = getattr(self, '__doc_class')
+        return ref()
+
+
+class Manager(BaseManager):
+    async def create(self, **kwargs):
+        obj = self._doc_class(**kwargs)
+        await obj.save()
+        return obj
 
 
 class ManagerDescriptor:

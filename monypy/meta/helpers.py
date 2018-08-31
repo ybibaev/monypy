@@ -16,7 +16,7 @@ def get_database(**database_attrs):
     return client[db_name]
 
 
-@lru_cache(maxsize=100, typed=True)
+@lru_cache(typed=True)
 def create_motor_client(**kwargs):
     loop = asyncio.get_running_loop()
     return AsyncIOMotorClient(**kwargs, io_loop=loop)
@@ -32,13 +32,8 @@ def get_collection(doc_class, db, **options):
 
 
 def manager_factory(doc_class, collection):
-    manager_doc_class = doc_class.manager_class
-    manager_class = (
-        manager_doc_class.for_doc(doc_class)
-        if manager_doc_class is Manager
-        else manager_doc_class
-    )
-    manager = manager_class(collection)
+    manager_class = (doc_class.manager_class or Manager).for_doc(doc_class)
+    manager = manager_class(collection=collection)
     return ManagerDescriptor(manager)
 
 
