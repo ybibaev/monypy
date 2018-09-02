@@ -14,6 +14,7 @@ def settings(request):
             'host': 'localhost',
             'port': 27017
         }
+
     return DBSettings
 
 
@@ -22,8 +23,9 @@ def settings(request):
 async def empty_doc(settings):
     class EmptyDoc(settings, Doc):
         pass
+
     try:
         yield EmptyDoc
 
     finally:
-        await EmptyDoc.manager.drop()
+        await EmptyDoc.documents.drop()

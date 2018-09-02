@@ -6,8 +6,6 @@ from itertools import chain
 from bson.codec_options import DEFAULT_CODEC_OPTIONS
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from ..manager import Manager, ManagerDescriptor
-
 
 def get_database(**database_attrs):
     attrs = dict(database_attrs)
@@ -29,12 +27,6 @@ def get_collection(doc_class, db, **options):
 
     return (db[collection_name]
             .with_options(collection_codec_options))
-
-
-def manager_factory(doc_class, collection):
-    manager_class = (doc_class.manager_class or Manager).for_doc(doc_class)
-    manager = manager_class(collection=collection)
-    return ManagerDescriptor(manager)
 
 
 def find_token(classes, token):

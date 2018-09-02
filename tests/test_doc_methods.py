@@ -15,7 +15,7 @@ async def test_save(empty_doc):
     await empty.save()
 
     assert MONGO_ID_KEY in empty
-    assert 1 == await empty_doc.manager.count_documents({})
+    assert 1 == await empty_doc.documents.count_documents({})
 
 
 @pytest.mark.asyncio
@@ -28,7 +28,7 @@ async def test_save_two(empty_doc):
     await empty.save()
 
     assert MONGO_ID_KEY in empty
-    assert 1 == await empty_doc.manager.count_documents({})
+    assert 1 == await empty_doc.documents.count_documents({})
 
 
 @pytest.mark.asyncio
@@ -42,7 +42,7 @@ async def test_refresh(empty_doc):
 
     assert MONGO_ID_KEY in empty
     assert 'test' not in empty
-    assert 1 == await empty_doc.manager.count_documents({})
+    assert 1 == await empty_doc.documents.count_documents({})
 
 
 @pytest.mark.asyncio
@@ -62,7 +62,7 @@ async def test_delete(empty_doc):
     await empty.save()
     await empty.delete()
 
-    assert 0 == await empty_doc.manager.count_documents({})
+    assert 0 == await empty_doc.documents.count_documents({})
 
 
 @pytest.mark.asyncio
@@ -72,7 +72,7 @@ async def test_delete_not_saved(empty_doc):
     with pytest.raises(DocumentDoesNotExistError):
         await empty.delete()
 
-    assert 0 == await empty_doc.manager.count_documents({})
+    assert 0 == await empty_doc.documents.count_documents({})
 
 
 @pytest.mark.asyncio

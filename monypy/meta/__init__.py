@@ -2,8 +2,9 @@ import abc
 import copy
 from collections import MutableMapping
 
-from .helpers import get_database, get_collection, manager_factory, find_token
+from .helpers import get_database, get_collection, find_token
 from ..exceptions import DocumentInitDataError
+from ..manager import DEFAULT_MANAGER_OBJECT_NAME, Manager
 
 DOC_DATA = '#data'
 
@@ -39,7 +40,11 @@ class DocBaseMeta(type):
 
         db = get_database(**database_attrs)
         collection = get_collection(cls, db, **collection_attrs)
-        cls.manager = manager_factory(cls, collection)
+
+        managers = {k: v for k, v in vars(cls).items() if isinstance(v, Manager)}
+        managers.setdefault(DEFAULT_MANAGER_OBJECT_NAME, Manager())
+        for manager_name, manager in managers.items():
+            manager.for_doc(doc_class=cls, manager_name=manager_name, collection=collection)
 
         return cls
 

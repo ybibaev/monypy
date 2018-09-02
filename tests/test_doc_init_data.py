@@ -62,7 +62,7 @@ async def test_init_data_in_class_definition(settings):
     empty = EmptyDoc()
     assert empty.test == 'test'
 
-    await EmptyDoc.manager.drop()
+    await EmptyDoc.documents.drop()
 
 
 @pytest.mark.asyncio

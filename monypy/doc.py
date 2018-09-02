@@ -2,7 +2,6 @@ import reprlib
 from collections import MutableMapping
 
 from .exceptions import DocumentDoesNotExistError
-from .manager import Manager
 from .meta import DocMeta, DOC_DATA
 
 MONGO_ID_KEY = '_id'
@@ -61,8 +60,6 @@ class DocBase(MutableMapping, metaclass=DocMeta):
 
 
 class Doc(DocBase):
-    manager_class = Manager
-
     __init_data__ = None
 
     __collection__ = None
@@ -72,21 +69,21 @@ class Doc(DocBase):
 
     async def save(self):
         if MONGO_ID_KEY not in self:
-            result = await type(self).manager.insert_one(self.__dict__[DOC_DATA])
+            result = await type(self).documents.insert_one(self.__dict__[DOC_DATA])
             self.__dict__[DOC_DATA][MONGO_ID_KEY] = result.inserted_id
         else:
-            await type(self).manager.replace_one({MONGO_ID_KEY: self._id}, self.__dict__[DOC_DATA])
+            await type(self).documents.replace_one({MONGO_ID_KEY: self._id}, self.__dict__[DOC_DATA])
 
     async def delete(self):
         if MONGO_ID_KEY not in self:
             raise DocumentDoesNotExistError
 
-        await type(self).manager.delete_one({MONGO_ID_KEY: self._id})
+        await type(self).documents.delete_one({MONGO_ID_KEY: self._id})
         del self._id
 
     async def refresh(self):
         if MONGO_ID_KEY not in self:
             raise DocumentDoesNotExistError
 
-        result = await type(self).manager.find_one({MONGO_ID_KEY: self._id})
+        result = await type(self).documents.find_one({MONGO_ID_KEY: self._id})
         self.__dict__[DOC_DATA] = result.__dict__[DOC_DATA]

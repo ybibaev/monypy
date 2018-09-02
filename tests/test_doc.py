@@ -65,12 +65,12 @@ async def test_change_collection_name(event_loop, settings):
             'name': 'test_doc'
         }
 
-    assert EmptyDoc.manager.name == 'test_doc'
+    assert EmptyDoc.documents.name == 'test_doc'
 
 
 @pytest.mark.asyncio
 async def test_collection_name(empty_doc):
-    assert empty_doc.manager.name == 'emptydoc'
+    assert empty_doc.documents.name == 'emptydoc'
 
 
 @pytest.mark.asyncio
@@ -95,7 +95,7 @@ async def test_inheritance_from_abstract_doc(settings):
 
     assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.manager.count_documents({}) == 0
+    assert await EmptyDoc.documents.count_documents({}) == 0
 
 
 @pytest.mark.asyncio
@@ -118,7 +118,7 @@ async def test_inheritance_from_abstract_doc_two(settings):
 
     assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.manager.count_documents({}) == 0
+    assert await EmptyDoc.documents.count_documents({}) == 0
 
 
 @pytest.mark.asyncio
@@ -147,8 +147,8 @@ async def test_inheritance_from_abstract_doc_twice(settings):
     assert 'test' in EmptyDoc()
     assert 'test' in EmptyDocTwo()
 
-    assert await EmptyDoc.manager.count_documents({}) == 0
-    assert await EmptyDocTwo.manager.count_documents({}) == 0
+    assert await EmptyDoc.documents.count_documents({}) == 0
+    assert await EmptyDocTwo.documents.count_documents({}) == 0
 
 
 @pytest.mark.asyncio
