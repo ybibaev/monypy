@@ -2,7 +2,7 @@ class BaseMonypyException(Exception):
     pass
 
 
-class DocumentDoesNotExistError(BaseMonypyException):
+class DocumentDoesNotExist(BaseMonypyException):
     pass
 
 

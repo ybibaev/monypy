@@ -1,17 +1,33 @@
+from typing import Any
+
 DEFAULT_MANAGER_CLASS_NAME = 'Manager'
+DEFAULT_MANAGER_OBJECT_NAME = 'documents'
 
 
-class Manager:
-    def __init__(self, collection):
-        self.__collection = collection
+class BaseManager:
+    def __init__(self):
+        self._doc_class = self._collection = None
 
-    def __getattr__(self, item):
-        return getattr(self.__collection, item)
+    def __getattr__(self, item: str) -> Any:
+        return getattr(self._collection, item)
 
-    @classmethod
-    def for_doc(cls, doc_class):
-        manager_class_name = f'{doc_class.__name__}{DEFAULT_MANAGER_CLASS_NAME}'
-        return type(manager_class_name, (cls,), {})
+    def for_doc(self, doc_class, collection, manager_name: str) -> None:
+        self._collection = collection
+        self._doc_class = doc_class
+        setattr(doc_class, manager_name, ManagerDescriptor(self))
+
+
+class Manager(BaseManager):
+    async def create(self, **kwargs):
+        obj = self._doc_class(**kwargs)
+        await obj.save()
+        return obj
+
+    def count(self, *args, **kwargs):
+        """
+        Method-alias on count_documents
+        """
+        return self.count_documents(*args, **kwargs)
 
 
 class ManagerDescriptor:

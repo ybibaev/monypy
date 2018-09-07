@@ -1,15 +1,12 @@
 import pytest
 
 from monypy import Doc
-from monypy.exceptions import DocumentInitDataError
 
 
 @pytest.mark.asyncio
 async def test_init_data_as_dict(empty_doc):
-    empty = empty_doc({'test_1': 'test_1', 'test': 'test_2'})
-
-    assert empty['test_1'] == 'test_1'
-    assert empty['test'] == 'test_2'
+    with pytest.raises(TypeError):
+        empty_doc({'test_1': 'test_1', 'test': 'test_2'})
 
 
 @pytest.mark.asyncio
@@ -22,7 +19,7 @@ async def test_init_data_as_kwargs(empty_doc):
 
 @pytest.mark.asyncio
 async def test_init_data_as_dict_and_kwargs(empty_doc):
-    with pytest.raises(DocumentInitDataError):
+    with pytest.raises(TypeError):
         empty_doc({'test_1': 'test_1', 'test': 'test_2'}, x=45)
 
 
@@ -56,42 +53,38 @@ async def test_init_data_with_callable(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_init_data_in_class_definition(event_loop, settings):
+async def test_init_data_in_class_definition(settings):
     class EmptyDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
         }
-
-        __loop__ = event_loop
 
     empty = EmptyDoc()
     assert empty.test == 'test'
 
-    await EmptyDoc.manager.drop()
+    await EmptyDoc.documents.drop()
 
 
 @pytest.mark.asyncio
-async def test_init_data_in_class_and_kwargs(event_loop, settings):
+async def test_init_data_in_class_and_kwargs(settings):
     class EmptyDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
         }
-
-        __loop__ = event_loop
 
     empty = EmptyDoc(test='test_45')
     assert empty.test == 'test_45'
 
 
 @pytest.mark.asyncio
-async def test_init_data_in_class_inheritance(event_loop, settings):
+async def test_init_data_in_class_inheritance(settings):
     class InitData:
         __init_data__ = {
             'test': 'test'
         }
 
     class EmptyDoc(settings, InitData, Doc):
-        __loop__ = event_loop
+        pass
 
     empty = EmptyDoc()
 

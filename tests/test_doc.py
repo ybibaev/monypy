@@ -1,7 +1,7 @@
 import pytest
 
 from monypy import Doc
-from monypy import connection
+from monypy.helpers import create_motor_client
 
 
 @pytest.mark.asyncio
@@ -59,34 +59,30 @@ async def test_repr_too_long(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_change_collection_name(event_loop, settings):
+async def test_change_collection_name(settings):
     class EmptyDoc(settings, Doc):
         __collection__ = {
             'name': 'test_doc'
         }
 
-        __loop__ = event_loop
-
-    assert EmptyDoc.manager.name == 'test_doc'
+    assert EmptyDoc.documents.name == 'test_doc'
 
 
 @pytest.mark.asyncio
 async def test_collection_name(empty_doc):
-    assert empty_doc.manager.name == 'emptydoc'
+    assert empty_doc.documents.name == 'emptydoc'
 
 
 @pytest.mark.asyncio
-async def test_abstract_doc(event_loop, settings):
+async def test_abstract_doc(settings):
     class AbstractDoc(settings, Doc):
         __abstract__ = True
 
-        __loop__ = event_loop
-
-    assert len(connection._connections) == 0
+    assert create_motor_client.cache_info().currsize == 0
 
 
 @pytest.mark.asyncio
-async def test_inheritance_from_abstract_doc(event_loop, settings):
+async def test_inheritance_from_abstract_doc(settings):
     class AbstractDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
@@ -94,57 +90,39 @@ async def test_inheritance_from_abstract_doc(event_loop, settings):
 
         __abstract__ = True
 
-        __loop__ = event_loop
-
     class EmptyDoc(AbstractDoc):
         pass
 
-    assert len(connection._connections) == 1
+    assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.manager.count() == 0
+    assert await EmptyDoc.documents.count({}) == 0
 
 
 @pytest.mark.asyncio
-async def test_inheritance_from_abstract_doc_two(event_loop, settings):
-    class AbstractDoc(Doc):
+async def test_inheritance_from_abstract_doc_two(settings):
+    class AbstractDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
         }
 
-        __database__ = {
-            'name': 'test',
-            'host': 'localhost',
-            'port': 27017
-        }
-
         __abstract__ = True
-
-        __loop__ = event_loop
 
     class EmptyDoc(AbstractDoc):
         pass
 
-    assert len(connection._connections) == 1
+    assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.manager.count() == 0
+    assert await EmptyDoc.documents.count({}) == 0
 
 
 @pytest.mark.asyncio
-async def test_inheritance_from_abstract_doc_twice(event_loop, settings):
-    class AbstractDoc(Doc):
+async def test_inheritance_from_abstract_doc_twice(settings):
+    class AbstractDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
         }
 
-        __database__ = {
-            'name': 'test',
-            'host': 'localhost',
-            'port': 27017
-        }
-
         __abstract__ = True
-
-        __loop__ = event_loop
 
     class EmptyDoc(AbstractDoc):
         pass
@@ -152,13 +130,13 @@ async def test_inheritance_from_abstract_doc_twice(event_loop, settings):
     class EmptyDocTwo(AbstractDoc):
         pass
 
-    assert len(connection._connections) == 1
+    assert create_motor_client.cache_info().currsize == 1
 
     assert 'test' in EmptyDoc()
     assert 'test' in EmptyDocTwo()
 
-    assert await EmptyDoc.manager.count() == 0
-    assert await EmptyDocTwo.manager.count() == 0
+    assert await EmptyDoc.documents.count({}) == 0
+    assert await EmptyDocTwo.documents.count({}) == 0
 
 
 @pytest.mark.asyncio
