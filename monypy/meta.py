@@ -2,9 +2,9 @@ import abc
 import copy
 from collections import MutableMapping
 
+from .exceptions import DocumentInitDataError
 from .helpers import get_database, get_collection, find_token
-from ..exceptions import DocumentInitDataError
-from ..manager import DEFAULT_MANAGER_OBJECT_NAME, Manager
+from .manager import DEFAULT_MANAGER_OBJECT_NAME, Manager, BaseManager
 
 DOC_DATA = '#data'
 
@@ -40,13 +40,18 @@ class DocBaseMeta(type):
 
         db = get_database(**database_attrs)
         collection = get_collection(cls, db, **collection_attrs)
-
-        managers = {k: v for k, v in vars(cls).items() if isinstance(v, Manager)}
-        managers.setdefault(DEFAULT_MANAGER_OBJECT_NAME, Manager())
-        for manager_name, manager in managers.items():
-            manager.for_doc(doc_class=cls, manager_name=manager_name, collection=collection)
+        mcs.collect_and_setup_managers(cls, collection)
 
         return cls
+
+    @staticmethod
+    def collect_and_setup_managers(cls, collection):
+        managers = {k: v for k, v in vars(cls).items() if isinstance(v, BaseManager)}
+        if DEFAULT_MANAGER_OBJECT_NAME not in managers:
+            managers[DEFAULT_MANAGER_OBJECT_NAME] = Manager()
+
+        for manager_name, manager in managers.items():
+            manager.for_doc(doc_class=cls, manager_name=manager_name, collection=collection)
 
     def __call__(cls, **kwargs):
         instance = super().__call__()
@@ -66,4 +71,7 @@ class DocBaseMeta(type):
 
 
 class DocMeta(DocBaseMeta, abc.ABCMeta):
+    """
+    Resolve metaclass's conflict
+    """
     pass

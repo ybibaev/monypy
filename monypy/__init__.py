@@ -1,12 +1,12 @@
 from .doc import Doc
-from .exceptions import DocumentDoesNotExistError, DocumentInitDataError
+from .exceptions import DocumentDoesNotExist, DocumentInitDataError
 from .manager import Manager
 
-__version__ = '2.0dev'
+__version__ = '2.0a1'
 
 __all__ = (
     'Doc',
     'Manager',
     'DocumentInitDataError',
-    'DocumentDoesNotExistError',
+    'DocumentDoesNotExist',
 )

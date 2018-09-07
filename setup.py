@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 with open('README.md') as fh:
     long_description = fh.read()
 
-with open('monypy/__init__.py') as f:
+with open('monypy/meta.py') as f:
     version = (
         re.search(
             r"__version__ = '([^']+)",

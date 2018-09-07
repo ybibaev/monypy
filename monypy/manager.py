@@ -24,6 +24,9 @@ class Manager(BaseManager):
         return obj
 
     def count(self, *args, **kwargs):
+        """
+        Method-alias on count_documents
+        """
         return self.count_documents(*args, **kwargs)
 
 

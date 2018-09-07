@@ -1,16 +1,65 @@
+import abc
 import reprlib
 from collections import MutableMapping
 
-from .exceptions import DocumentDoesNotExistError
+from .exceptions import DocumentDoesNotExist
 from .meta import DocMeta, DOC_DATA
 
-MONGO_ID_KEY = '_id'
+MONGODB_ID_KEY = '_id'
 
 
 class DocBase(MutableMapping, metaclass=DocMeta):
+    __init_data__ = None
+
+    __collection__ = None
+    __database__ = None
+
+    __abstract__ = False
+
     def __init__(self, **kwargs):
         pass
 
+    @abc.abstractmethod
+    def __getattr__(self, item):
+        pass
+
+    @abc.abstractmethod
+    def __setattr__(self, key, value):
+        pass
+
+    @abc.abstractmethod
+    def __delattr__(self, item):
+        pass
+
+    @abc.abstractmethod
+    def __contains__(self, item):
+        pass
+
+    @abc.abstractmethod
+    async def save(self) -> None:
+        pass
+
+    @abc.abstractmethod
+    async def refresh(self) -> None:
+        pass
+
+    @abc.abstractmethod
+    async def delete(self) -> None:
+        pass
+
+    def __repr__(self):
+        name = type(self).__name__
+        repr_ = reprlib.repr(self.__dict__[DOC_DATA])
+        return f'<{name}({repr_})>'
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+
+        return self.__dict__[DOC_DATA] == other.__dict__[DOC_DATA]
+
+
+class Doc(DocBase):
     def __getitem__(self, item):
         return self.__dict__[DOC_DATA][item]
 
@@ -22,6 +71,12 @@ class DocBase(MutableMapping, metaclass=DocMeta):
 
     def __contains__(self, item):
         return item in self.__dict__[DOC_DATA]
+
+    def __len__(self):
+        return len(self.__dict__[DOC_DATA])
+
+    def __iter__(self):
+        return iter(self.__dict__[DOC_DATA])
 
     def __getattr__(self, key):
         try:
@@ -38,52 +93,23 @@ class DocBase(MutableMapping, metaclass=DocMeta):
         except KeyError:
             raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
 
-    def __len__(self):
-        return len(self.__dict__[DOC_DATA])
-
-    def __iter__(self):
-        return iter(self.__dict__[DOC_DATA])
-
-    def _as_dict(self):
-        return self.__dict__[DOC_DATA]
-
-    def __repr__(self):
-        name = type(self).__name__
-        repr_ = reprlib.repr(self._as_dict())
-        return f'<{name}({repr_})>'
-
-    def __eq__(self, other):
-        return isinstance(other, type(self)) and self.__dict__[DOC_DATA] == other.__dict__[DOC_DATA]
-
-    def __ne__(self, other):
-        return not self == other
-
-
-class Doc(DocBase):
-    __init_data__ = None
-
-    __collection__ = None
-    __database__ = None
-
-    __abstract__ = False
-
     async def save(self):
-        if MONGO_ID_KEY not in self:
+        if MONGODB_ID_KEY not in self:
             result = await type(self).documents.insert_one(self.__dict__[DOC_DATA])
-            self.__dict__[DOC_DATA][MONGO_ID_KEY] = result.inserted_id
+            self.__dict__[DOC_DATA][MONGODB_ID_KEY] = result.inserted_id
         else:
-            await type(self).documents.replace_one({MONGO_ID_KEY: self._id}, self.__dict__[DOC_DATA])
+            await type(self).documents.replace_one({MONGODB_ID_KEY: self._id}, self.__dict__[DOC_DATA])
 
     async def delete(self):
-        if MONGO_ID_KEY not in self:
-            raise DocumentDoesNotExistError
+        if MONGODB_ID_KEY not in self:
+            raise DocumentDoesNotExist
 
-        await type(self).documents.delete_one({MONGO_ID_KEY: self._id})
+        await type(self).documents.delete_one({MONGODB_ID_KEY: self._id})
         del self._id
 
     async def refresh(self):
-        if MONGO_ID_KEY not in self:
-            raise DocumentDoesNotExistError
+        if MONGODB_ID_KEY not in self:
+            raise DocumentDoesNotExist
 
-        result = await type(self).documents.find_one({MONGO_ID_KEY: self._id})
+        result = await type(self).documents.find_one({MONGODB_ID_KEY: self._id})
         self.__dict__[DOC_DATA] = result.__dict__[DOC_DATA]

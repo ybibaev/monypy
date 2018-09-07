@@ -1,7 +1,7 @@
 import pytest
 
 from monypy import Doc
-from monypy.meta.helpers import create_motor_client
+from monypy.helpers import create_motor_client
 
 
 @pytest.mark.asyncio
@@ -59,7 +59,7 @@ async def test_repr_too_long(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_change_collection_name(event_loop, settings):
+async def test_change_collection_name(settings):
     class EmptyDoc(settings, Doc):
         __collection__ = {
             'name': 'test_doc'
@@ -95,20 +95,14 @@ async def test_inheritance_from_abstract_doc(settings):
 
     assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.documents.count_documents({}) == 0
+    assert await EmptyDoc.documents.count({}) == 0
 
 
 @pytest.mark.asyncio
 async def test_inheritance_from_abstract_doc_two(settings):
-    class AbstractDoc(Doc):
+    class AbstractDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
-        }
-
-        __database__ = {
-            'name': 'test',
-            'host': 'localhost',
-            'port': 27017
         }
 
         __abstract__ = True
@@ -118,20 +112,14 @@ async def test_inheritance_from_abstract_doc_two(settings):
 
     assert create_motor_client.cache_info().currsize == 1
     assert 'test' in EmptyDoc()
-    assert await EmptyDoc.documents.count_documents({}) == 0
+    assert await EmptyDoc.documents.count({}) == 0
 
 
 @pytest.mark.asyncio
 async def test_inheritance_from_abstract_doc_twice(settings):
-    class AbstractDoc(Doc):
+    class AbstractDoc(settings, Doc):
         __init_data__ = {
             'test': 'test'
-        }
-
-        __database__ = {
-            'name': 'test',
-            'host': 'localhost',
-            'port': 27017
         }
 
         __abstract__ = True
@@ -147,8 +135,8 @@ async def test_inheritance_from_abstract_doc_twice(settings):
     assert 'test' in EmptyDoc()
     assert 'test' in EmptyDocTwo()
 
-    assert await EmptyDoc.documents.count_documents({}) == 0
-    assert await EmptyDocTwo.documents.count_documents({}) == 0
+    assert await EmptyDoc.documents.count({}) == 0
+    assert await EmptyDocTwo.documents.count({}) == 0
 
 
 @pytest.mark.asyncio
