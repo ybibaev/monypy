@@ -23,11 +23,11 @@ class Manager(BaseManager):
         await obj.save()
         return obj
 
-    def count(self, *args, **kwargs):
+    def count(self, filter, session=None, **kwargs):
         """
         Method-alias on count_documents
         """
-        return self.count_documents(*args, **kwargs)
+        return self.count_documents(filter, session=session, **kwargs)
 
 
 class ManagerDescriptor:
