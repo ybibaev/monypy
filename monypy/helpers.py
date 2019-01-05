@@ -29,7 +29,7 @@ def get_collection(doc_class, db, **options):
 
 def find_token(classes, token):
     def find(cls):
-        targets = (c.__dict__.get(token) for c in cls.__mro__)
+        targets = (vars(c).get(token) for c in cls.__mro__)
         return filter(None, targets)
 
     with suppress(StopIteration):

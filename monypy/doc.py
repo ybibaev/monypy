@@ -49,19 +49,34 @@ class DocBase(MutableMapping, metaclass=DocMeta):
 
     def __repr__(self):
         name = type(self).__name__
-        repr_ = reprlib.repr(self.__dict__[DOC_DATA])
+        repr_ = reprlib.repr(vars(self)[DOC_DATA])
         return f'<{name}({repr_})>'
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
 
-        return self.__dict__[DOC_DATA] == other.__dict__[DOC_DATA]
+        return vars(self)[DOC_DATA] == vars(other)[DOC_DATA]
 
 
 class Doc(DocBase):
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+    def __delattr__(self, key):
+        try:
+            del self[key]
+        except KeyError:
+            raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
+
     def __getitem__(self, item):
-        return self.__dict__[DOC_DATA][item]
+        return vars(self)[DOC_DATA][item]
 
     def __setitem__(self, key, value):
         if key in self.__init_data__:
@@ -74,41 +89,26 @@ class Doc(DocBase):
 
             value = value_data
 
-        self.__dict__[DOC_DATA][key] = value
+        vars(self)[DOC_DATA][key] = value
 
     def __delitem__(self, key):
-        del self.__dict__[DOC_DATA][key]
+        del vars(self)[DOC_DATA][key]
 
     def __contains__(self, item):
-        return item in self.__dict__[DOC_DATA]
+        return item in vars(self)[DOC_DATA]
 
     def __len__(self):
-        return len(self.__dict__[DOC_DATA])
+        return len(vars(self)[DOC_DATA])
 
     def __iter__(self):
-        return iter(self.__dict__[DOC_DATA])
-
-    def __getattr__(self, key):
-        try:
-            return self.__dict__[DOC_DATA][key]
-        except KeyError:
-            raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
-
-    def __setattr__(self, key, value):
-        self.__dict__[DOC_DATA][key] = value
-
-    def __delattr__(self, key):
-        try:
-            del self.__dict__[DOC_DATA][key]
-        except KeyError:
-            raise AttributeError(f'{type(self).__name__!r} object has no attribute {key!r}')
+        return iter(vars(self)[DOC_DATA])
 
     async def save(self):
         if MONGODB_ID_KEY not in self:
-            result = await type(self).documents.insert_one(self.__dict__[DOC_DATA])
-            self.__dict__[DOC_DATA][MONGODB_ID_KEY] = result.inserted_id
+            result = await type(self).documents.insert_one(vars(self)[DOC_DATA])
+            vars(self)[DOC_DATA][MONGODB_ID_KEY] = result.inserted_id
         else:
-            await type(self).documents.replace_one({MONGODB_ID_KEY: self._id}, self.__dict__[DOC_DATA])
+            await type(self).documents.replace_one({MONGODB_ID_KEY: self._id}, vars(self)[DOC_DATA])
 
     async def delete(self):
         if MONGODB_ID_KEY not in self:
