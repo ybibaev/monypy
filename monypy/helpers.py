@@ -1,4 +1,3 @@
-import asyncio
 from contextlib import suppress
 from functools import lru_cache
 from itertools import chain
@@ -16,8 +15,7 @@ def get_database(**database_attrs):
 
 @lru_cache(typed=True)
 def create_motor_client(**kwargs):
-    loop = asyncio.get_running_loop()
-    return AsyncIOMotorClient(**kwargs, io_loop=loop)
+    return AsyncIOMotorClient(**kwargs)
 
 
 def get_collection(doc_class, db, **options):
