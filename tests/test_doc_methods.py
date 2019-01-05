@@ -54,6 +54,16 @@ async def test_refresh_not_saved(empty_doc):
 
 
 @pytest.mark.asyncio
+async def test_save_nested_and_refresh(empty_doc):
+    empty = empty_doc(test={'test': 'test'})
+
+    await empty.save()
+    await empty.refresh()
+
+    assert not isinstance(empty['test'], empty_doc)
+
+
+@pytest.mark.asyncio
 async def test_delete(empty_doc):
     empty = empty_doc()
 

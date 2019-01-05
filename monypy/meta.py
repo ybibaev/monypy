@@ -56,15 +56,20 @@ class DocBaseMeta(type):
     def __call__(cls, **kwargs):
         instance = super().__call__()
 
-        default_init_data = cls.get_default_init_data()
-        init_data = {**default_init_data, **kwargs.copy()}
-        called_init_data = {k: v(instance) for k, v in init_data.items() if callable(v)}
-        instance.__dict__[DOC_DATA] = {**init_data, **called_init_data}
+        init_data = {
+            k: v(instance) if callable(v) else v
+            for k, v in cls.get_default_init_data().items()
+        }
+        vars(instance)[DOC_INIT_DATA] = init_data.copy()
+        vars(instance)[DOC_DATA] = init_data.copy()
+
+        for k, v in kwargs.items():
+            instance[k] = v
 
         return instance
 
-    def get_default_init_data(cls):
-        default_init_data = cls.__dict__.get(DOC_INIT_DATA) or {}
+    def get_default_init_data(cls) -> MutableMapping:
+        default_init_data = vars(cls).get(DOC_INIT_DATA) or {}
         if not isinstance(default_init_data, MutableMapping):
             raise DocumentInitDataError('Init data must be an instance of MutableMapping')
         return copy.copy(default_init_data)

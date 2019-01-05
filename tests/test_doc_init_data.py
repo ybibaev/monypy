@@ -36,20 +36,41 @@ async def test_init_data_change(empty_doc):
 
 
 @pytest.mark.asyncio
-async def test_init_data_with_callable(empty_doc):
+async def test_init_data_with_callable(settings):
     def foo(instance):
         return id(instance)
 
-    empty = empty_doc(id=foo)
-    empty_2 = empty_doc(id=foo)
+    class EmptyDoc(settings, Doc):
+        __init_data__ = {
+            'test': foo,
+        }
 
-    id_1 = empty['id']
-    id_2 = empty_2['id']
+    empty = EmptyDoc()
 
-    assert isinstance(id_1, int)
-    assert isinstance(id_2, int)
+    assert isinstance(empty['test'], int)
 
-    assert id_1 != id_2
+
+@pytest.mark.asyncio
+async def test_init_data_with_callable_kwargs(empty_doc):
+    def foo(instance):
+        return id(instance)
+
+    empty = empty_doc(test=foo)
+    assert callable(empty['test'])
+
+
+@pytest.mark.asyncio
+async def test_init_data_save_and_refresh_nested(settings):
+    class EmptyDoc(settings, Doc):
+        __init_data__ = {
+            'test': 'test'
+        }
+
+    empty = EmptyDoc(**{'test2': {'test2': 'test2'}})
+    await empty.save()
+    await empty.refresh()
+
+    assert 'test' not in empty['test2']
 
 
 @pytest.mark.asyncio
@@ -61,8 +82,6 @@ async def test_init_data_in_class_definition(settings):
 
     empty = EmptyDoc()
     assert empty.test == 'test'
-
-    await EmptyDoc.documents.drop()
 
 
 @pytest.mark.asyncio

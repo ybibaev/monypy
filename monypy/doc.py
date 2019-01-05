@@ -64,6 +64,16 @@ class Doc(DocBase):
         return self.__dict__[DOC_DATA][item]
 
     def __setitem__(self, key, value):
+        if key in self.__init_data__:
+            del self.__init_data__[key]
+
+        if type(value) is type(self):
+            value_data = vars(value)[DOC_DATA].copy()
+            for _key in value.__init_data__:
+                del value_data[_key]
+
+            value = value_data
+
         self.__dict__[DOC_DATA][key] = value
 
     def __delitem__(self, key):
@@ -112,4 +122,4 @@ class Doc(DocBase):
             raise DocumentDoesNotExist
 
         result = await type(self).documents.find_one({MONGODB_ID_KEY: self._id})
-        self.__dict__[DOC_DATA] = result.__dict__[DOC_DATA]
+        vars(self)[DOC_DATA] = vars(result)[DOC_DATA]
